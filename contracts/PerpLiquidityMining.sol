@@ -31,6 +31,21 @@ contract PerpLiquidityMining is MerkleRedeemUpgradeSafe {
         super.seedAllocations(_week, _merkleRoot, _totalAllocation);
         merkleRootIndexes.push(_week);
     }
+    function claimWeek(
+        address _account,
+        uint256 _week,
+        uint256 _claimedBalance,
+        bytes32[] memory _merkleProof
+    ) public override {
+        require(weekMerkleRoots[_week] != 0, "Invalid claim");
+        super.claimWeek(_account, _week, _claimedBalance, _merkleProof);
+    }
+
+    function claimWeeks(address _account, Claim[] memory _claims) public virtual override {
+        for (uint256 i; i < _claims.length; i++) {
+            claimWeek(_account, _claims[i].week, _claims[i].balance, _claims[i].merkleProof);
+        }
+    }
 
     //
     // VIEW

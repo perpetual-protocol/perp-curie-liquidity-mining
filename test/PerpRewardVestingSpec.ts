@@ -45,28 +45,28 @@ describe("liquidity mining", () => {
             await perpLiquidityMining.seedAllocations(1, RANDOM_BYTES32_1, parseEther("500000"))
         })
         it("alice claims her own share", async () => {
-            await perpLiquidityMining.connect(alice).claimWeek(alice.address, 1, parseEther("500000"), [RANDOM_BYTES32_1])
+            await perpLiquidityMining.connect(alice).claimWeek(alice.address, 1, parseEther("200000"), [RANDOM_BYTES32_1])
 
-            expect(await token.balanceOf(alice.address)).to.eq(parseEther("500000"))
-            expect(await token.balanceOf(perpLiquidityMining.address)).to.eq(parseEther("500000"))
+            expect(await token.balanceOf(alice.address)).to.eq(parseEther("200000"))
+            expect(await token.balanceOf(perpLiquidityMining.address)).to.eq(parseEther("300000"))
             expect(await perpLiquidityMining.claimed(1, alice.address)).to.eq(true)
         })
 
         it("admin claims alice's share", async () => {
-            await perpLiquidityMining.connect(admin).claimWeek(alice.address, 1, parseEther("500000"), [RANDOM_BYTES32_1])
+            await perpLiquidityMining.connect(admin).claimWeek(alice.address, 1, parseEther("200000"), [RANDOM_BYTES32_1])
 
-            expect(await token.balanceOf(alice.address)).to.eq(parseEther("500000"))
-            expect(await token.balanceOf(perpLiquidityMining.address)).to.eq(parseEther("500000"))
+            expect(await token.balanceOf(alice.address)).to.eq(parseEther("200000"))
+            expect(await token.balanceOf(perpLiquidityMining.address)).to.eq(parseEther("300000"))
             expect(await perpLiquidityMining.claimed(1, alice.address)).to.eq(true)
         })
 
         it("alice & bob both claim their shares", async () => {
-            await perpLiquidityMining.connect(alice.address).claimWeek(alice.address, 1, parseEther("200000"), [RANDOM_BYTES32_1])
-            await perpLiquidityMining.connect(bob.address).claimWeek(bob.address, 1, parseEther("300000"), [RANDOM_BYTES32_1])
+            await perpLiquidityMining.connect(alice).claimWeek(alice.address, 1, parseEther("200000"), [RANDOM_BYTES32_1])
+            await perpLiquidityMining.connect(bob).claimWeek(bob.address, 1, parseEther("300000"), [RANDOM_BYTES32_1])
 
             expect(await token.balanceOf(alice.address)).to.eq(parseEther("200000"))
             expect(await token.balanceOf(bob.address)).to.eq(parseEther("300000"))
-            expect(await token.balanceOf(perpLiquidityMining.address)).to.eq(parseEther("500000"))
+            expect(await token.balanceOf(perpLiquidityMining.address)).to.eq(parseEther("0"))
             expect(await perpLiquidityMining.claimed(1, alice.address)).to.eq(true)
             expect(await perpLiquidityMining.claimed(1, bob.address)).to.eq(true)
         })
@@ -85,18 +85,13 @@ describe("liquidity mining", () => {
         })
 
         it("force error, invalid claim, input week is invalid", async () => {
-            expect(await 
-                perpLiquidityMining.connect(alice).claimWeek(alice.address, 0, parseEther("500000"), [RANDOM_BYTES32_1])).to.revertedWith(
-                "Invalid claim"
-            )
+            await expect(perpLiquidityMining.connect(alice).claimWeek(alice.address, 0, parseEther("500000"), [RANDOM_BYTES32_1])).to.revertedWith("Invalid claim")
         })
 
 
         it("force error, claiming twice", async () => {
-            await perpLiquidityMining.seedAllocations(1, RANDOM_BYTES32_1, parseEther("500000"))
-
             await perpLiquidityMining.connect(alice).claimWeek(alice.address, 1, parseEther("500000"), [RANDOM_BYTES32_1])
-            expect(await 
+            await expect( 
                 perpLiquidityMining.connect(alice).claimWeek(alice.address, 1, parseEther("500000"), [RANDOM_BYTES32_1])).to.revertedWith(
                     "Claimed already",
             )

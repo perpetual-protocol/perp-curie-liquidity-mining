@@ -58,7 +58,7 @@ contract MerkleRedeemUpgradeSafe is PerpOwnableUpgrade {
         uint256 _week,
         uint256 _claimedBalance,
         bytes32[] memory _merkleProof
-    ) public  {
+    ) public virtual {
         require(!claimed[_week][_liquidityProvider], "Claimed already");
         require(verifyClaim(_liquidityProvider, _week, _claimedBalance, _merkleProof), "Incorrect merkle proof");
 
@@ -72,7 +72,7 @@ contract MerkleRedeemUpgradeSafe is PerpOwnableUpgrade {
         bytes32[] merkleProof;
     }
 
-    function claimWeeks(address _liquidityProvider, Claim[] memory claims) public  {
+    function claimWeeks(address _liquidityProvider, Claim[] memory claims) public virtual {
         uint256 totalBalance = 0;
         Claim memory claim;
         for (uint256 i = 0; i < claims.length; i++) {
