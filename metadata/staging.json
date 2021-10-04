@@ -1,0 +1,14 @@
+{
+    "contracts": {
+        "PerpLiquidityMining": {
+            "address": "0xAE87d6cb1dE94840080D7b15A3C36fca9F1C8Dcd",
+            "createdBlockNumber": 9406393,
+            "name": "contracts/PerpLiquidityMining.sol:PerpLiquidityMining"
+        }
+    },
+    "externalContracts": {
+        "DefaultProxyAdmin": "0xc0FD6522A0E0a9Fd0cd64083B46E3462A5907726",
+        "PERP_TEST": "0x02711EfcFdf62fFdF5a1D432FC178B269F23E6E6"
+    },
+    "network": "rinkeby"
+}
