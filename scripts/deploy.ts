@@ -17,7 +17,6 @@ export enum DeploymentsKey {
     PERP_TEST = "PERP_TEST",
 }
 
-
 export const OZ_PROXY = "OpenZeppelinTransparentProxy"
 
 export const CONTRACT_FILES = {

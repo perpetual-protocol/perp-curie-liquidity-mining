@@ -4,7 +4,6 @@ pragma abicoder v2;
 
 import { MerkleRedeemUpgradeSafe } from "./Balancer/MerkleRedeemUpgradeSafe.sol";
 
-
 contract PerpLiquidityMining is MerkleRedeemUpgradeSafe {
     //**********************************************************//
     //    The below state variables can not change the order    //
@@ -16,12 +15,10 @@ contract PerpLiquidityMining is MerkleRedeemUpgradeSafe {
     //    The above state variables can not change the order    //
     //**********************************************************//
 
-
     function initialize(address _token) external initializer {
         require(_token != address(0), "Invalid input");
         __MerkleRedeem_init(_token);
     }
-
 
     function seedAllocations(
         uint256 _week,
@@ -31,6 +28,7 @@ contract PerpLiquidityMining is MerkleRedeemUpgradeSafe {
         super.seedAllocations(_week, _merkleRoot, _totalAllocation);
         merkleRootIndexes.push(_week);
     }
+
     function claimWeek(
         address _account,
         uint256 _week,

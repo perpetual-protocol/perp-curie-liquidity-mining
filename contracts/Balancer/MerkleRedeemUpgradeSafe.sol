@@ -3,13 +3,12 @@
 // 1. add license and update solidity version to 0.7.6
 // 2. make it upgradeable
 
-
 // SPDX-License-Identifier: GPL-2.0-or-later
 pragma solidity 0.7.6;
 pragma abicoder v2;
 
 import { MerkleProofUpgradeable } from "@openzeppelin/contracts-upgradeable/cryptography/MerkleProofUpgradeable.sol";
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol"; 
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { PerpOwnableUpgrade } from "../utils/PerpOwnableUpgrade.sol";
 
 contract MerkleRedeemUpgradeSafe is PerpOwnableUpgrade {

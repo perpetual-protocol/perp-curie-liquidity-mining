@@ -5,7 +5,6 @@ pragma experimental ABIEncoderV2;
 import "../PerpLiquidityMining.sol";
 
 contract TestPerpLiquidityMining is PerpLiquidityMining {
-  
     function verifyClaim(
         address _liquidityProvider,
         uint256 _week,

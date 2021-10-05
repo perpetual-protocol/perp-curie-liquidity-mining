@@ -11,7 +11,6 @@ interface Metadata {
     externalContracts: ExternalContractMetadata
 }
 
-// TODO: should we add abi?
 interface InternalContractMetadata {
     [deploymentsKey: string]: {
         name: string

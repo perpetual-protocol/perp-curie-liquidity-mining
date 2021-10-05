@@ -7,20 +7,18 @@ import { TestERC20 } from "../typechain"
 // if it's production
 // import IERC20Artifact from "../artifacts/@openzeppelin/contracts/token/ERC20/IERC20.sol/IERC20.json"
 
-// TODO prepare external contract address and save to deployments
-// prepare a contract name enum
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     console.log(`\nRunning: ${__filename}`)
 
     const { deployments } = hre
     const deployer = await ethers.getNamedSigner("deployer")
 
-    // prepare USDC
-    if (hre.network.name === "mainnet") {
+    // prepare PERP
+    if (hre.network.name === "homestead") {
         // PERP address on Mainnet : 0xbc396689893d065f41bc2c6ecbee5e0085233447
         // const perp = await ethers.getContractAt(IERC20Artifact.abi, "address")
         // await deployments.save("PERP", { abi: perp.abi, address: perp.address })
-    } else if (hre.network.name === "arbitrumRinkeby" || hre.network.name === "rinkeby") {
+    } else if (hre.network.name === "rinkeby") {
         const perp = await deployments.deploy(DeploymentsKey.PERP_TEST, {
             from: deployer.address,
             contract: ContractFullyQualifiedName.TestERC20,
