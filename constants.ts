@@ -5,6 +5,7 @@ export const OPTIMISM_KOVAN_DEPLOYER_MNEMONIC = _.defaultTo(process.env["OPTIMIS
 export const OPTIMISM_WEB3_ENDPOINT = _.defaultTo(process.env["OPTIMISM_WEB3_ENDPOINT"], "")
 export const OPTIMISM_DEPLOYER_MNEMONIC = _.defaultTo(process.env["OPTIMISM_DEPLOYER_MNEMONIC"], "")
 export const ETHERSCAN_API_KEY = _.defaultTo(process.env["ETHERSCAN_API_KEY"], "")
+export const COMPANION_NETWORK = _.defaultTo(process.env["COMPANION_NETWORK"], "")
 
 if (_.isEmpty(OPTIMISM_KOVAN_DEPLOYER_MNEMONIC)) {
     console.warn("OPTIMISM_KOVAN_DEPLOYER_MNEMONIC is empty")

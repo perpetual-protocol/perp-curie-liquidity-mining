@@ -9,31 +9,8 @@ import "hardhat-deploy-ethers"
 import "hardhat-gas-reporter"
 import { HardhatUserConfig } from "hardhat/config"
 import "solidity-coverage"
-import {
-    OPTIMISM_DEPLOYER_MNEMONIC,
-    OPTIMISM_KOVAN_DEPLOYER_MNEMONIC,
-    OPTIMISM_KOVAN_WEB3_ENDPOINT,
-    OPTIMISM_WEB3_ENDPOINT,
-} from "./constants"
 import "./mocha-test"
-
-export function getUrl(network: string) {
-    const NetworkUrl = {
-        optimism: OPTIMISM_WEB3_ENDPOINT,
-        optimismKovan: OPTIMISM_KOVAN_WEB3_ENDPOINT,
-    }
-
-    return NetworkUrl[network] ? NetworkUrl[network] : ""
-}
-
-export function getMnemonic(network: string) {
-    const NetworkMnemonic = {
-        optimism: OPTIMISM_DEPLOYER_MNEMONIC,
-        optimismKovan: OPTIMISM_KOVAN_DEPLOYER_MNEMONIC,
-    }
-
-    return NetworkMnemonic[network] ? NetworkMnemonic[network] : ""
-}
+import { getMnemonic, getUrl } from "./scripts/hardhatConfig"
 
 enum ChainId {
     OPTIMISM_CHAIN_ID = 10,

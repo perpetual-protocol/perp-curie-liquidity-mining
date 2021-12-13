@@ -2,47 +2,47 @@ import { parseUnits } from "ethers/lib/utils"
 import { ethers } from "hardhat"
 import { DeployFunction } from "hardhat-deploy/types"
 import { HardhatRuntimeEnvironment } from "hardhat/types"
-import { ContractFullyQualifiedName, DeploymentsKey, getTag, OZ_PROXY } from "../scripts/deploy"
-import { TestERC20 } from "../typechain"
-// if it's production
-// import IERC20Artifact from "../artifacts/@openzeppelin/contracts/token/ERC20/IERC20.sol/IERC20.json"
+import TestERC20 from "../artifacts/contracts/Test/TestERC20.sol/TestERC20.json"
+import { ExternalContractFullyQualifiedName, ExternalDeploymentsKey } from "../scripts/deploy/constants"
+import { getTag, getTestUsdc } from "../scripts/deploy/helpers"
+import { deployUpgradable } from "../scripts/deploy/upgrades"
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     console.log(`\nRunning: ${__filename}`)
 
     const { deployments } = hre
+    const { getNamedAccounts } = hre.network.name === "hardhat" ? hre.companionNetworks.fork : hre
     const deployer = await ethers.getNamedSigner("deployer")
+    const { usdc } = await getNamedAccounts()
 
-    // prepare PERP
+    // prepare USDC
+    const deploymentKey = ExternalDeploymentsKey.USDC
     if (hre.network.name === "optimism") {
-        // PERP address on Mainnet : 0xbc396689893d065f41bc2c6ecbee5e0085233447
-        // const perp = await ethers.getContractAt(IERC20Artifact.abi, "address")
-        // await deployments.save("PERP", { abi: perp.abi, address: perp.address })
-    } else if (hre.network.name === "optimismKovan") {
-        const perp = await deployments.deploy(DeploymentsKey.PERP_TEST, {
-            from: deployer.address,
-            contract: ContractFullyQualifiedName.TestERC20,
-            log: true,
-            proxy: {
-                proxyContract: OZ_PROXY,
-                execute: {
-                    init: {
-                        methodName: "__TestERC20_init",
-                        args: ["TestPERP", "TestPERP"],
-                    },
-                },
+        await deployments.save(deploymentKey, { abi: TestERC20.abi, address: usdc })
+        console.log(`Saved USDC: ${usdc}`)
+    } else if (hre.network.name === "optimismKovan" || hre.network.name === "hardhat") {
+        const contractFullyQualifiedName = ExternalContractFullyQualifiedName.TestERC20
+        const proxyExecute = {
+            init: {
+                methodName: "__TestERC20_init",
+                args: ["TestUSDC", "TestUSDC", 6],
             },
-            gasLimit: 1000000, // sometimes estimateGas is too low, we must set a higher gasLimit manually
-        })
-        const testPerpFactory = await ethers.getContractFactory(ContractFullyQualifiedName.TestERC20)
-        const testPerp = testPerpFactory.attach(perp.address) as TestERC20
-        await (await testPerp.setMinter(deployer.address)).wait()
-        console.log("Assigned TestnetDeployer as TestPERP minter")
+        }
+        await deployUpgradable(deploymentKey, contractFullyQualifiedName, proxyExecute)
 
-        const decimals = await testPerp.decimals()
+        const testUsdc = await getTestUsdc()
+
+        const minterRole = await testUsdc.MINTER_ROLE()
+        const decimals = await testUsdc.decimals()
         const billion = parseUnits("1000000000", decimals)
-        await (await testPerp.mint(deployer.address, billion)).wait()
-        console.log("Executed TestPERP.mint(billion)")
+        if (!(await testUsdc.hasRole(minterRole, deployer.address))) {
+            console.log(`Executing testUsdc.setMinter(${deployer.address})`)
+            await (await testUsdc.setMinter(deployer.address)).wait()
+            console.log(`Executed testUsdc.setMinter(${deployer.address})`)
+        }
+        console.log(`Executing testUsdc.mint(${deployer.address}, ${billion})`)
+        await (await testUsdc.mint(deployer.address, billion)).wait()
+        console.log(`Executed testUsdc.mint(${deployer.address}, ${billion})`)
     }
 }
 func.tags = [getTag(__filename)]
