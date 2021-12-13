@@ -1,18 +1,19 @@
 import fs from "fs"
-import { HardhatRuntimeEnvironment } from "hardhat/types"
+import hre from "hardhat"
 import { resolve } from "path"
 
-const exceptionList = []
+const exceptionList = ["DefaultProxyAdmin", "UniswapV3Factory", "BTCUSDChainlinkPriceFeed", "ETHUSDChainlinkPriceFeed"]
 
 interface ContractInfo {
     name: string
     address: string
+    args: any[]
 }
 
-function getContractsInfo(network: String, stage: String): Array<ContractInfo> {
+export function getContractsInfo(network: String): Array<ContractInfo> {
     const contractsInfo = []
-    const stageMetadata = `./metadata/${stage}.json`
-    const jsonStr = fs.readFileSync(resolve(stageMetadata), "utf8")
+    const metadata = `./metadata/${network}.json`
+    const jsonStr = fs.readFileSync(resolve(metadata), "utf8")
     const { contracts } = JSON.parse(jsonStr)
 
     for (const [name] of Object.entries(contracts)) {
@@ -33,15 +34,12 @@ function getContractsInfo(network: String, stage: String): Array<ContractInfo> {
     return contractsInfo
 }
 
-export async function verifyContract(hre: HardhatRuntimeEnvironment, stage: String): Promise<void> {
+export async function verifyAndPushContract(): Promise<void> {
     const network = hre.network.name
-    console.log(`verifying on ${network}`)
-
-    const contractsInfo = await getContractsInfo(network, stage)
+    const contractsInfo = getContractsInfo(network)
 
     for (const { name, address } of contractsInfo) {
-        console.log(`verifying , ${name} ${address}...`)
-
+        console.log(`verifying contract ${name} on ${address}`)
         await hre.tenderly
             .verify({
                 name,
@@ -50,5 +48,23 @@ export async function verifyContract(hre: HardhatRuntimeEnvironment, stage: Stri
             .catch(e => {
                 console.log(e)
             })
+        console.log(`pushing contract ${name}`)
+        await hre.tenderly
+            .push({
+                name,
+                address,
+            })
+            .catch(e => {
+                console.log(e)
+            })
     }
+}
+
+if (require.main === module) {
+    verifyAndPushContract()
+        .then(() => process.exit(0))
+        .catch(error => {
+            console.error(error)
+            process.exit(1)
+        })
 }

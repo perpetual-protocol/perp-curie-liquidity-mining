@@ -14,11 +14,11 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const deployer = await ethers.getNamedSigner("deployer")
 
     // prepare PERP
-    if (hre.network.name === "homestead") {
+    if (hre.network.name === "optimism") {
         // PERP address on Mainnet : 0xbc396689893d065f41bc2c6ecbee5e0085233447
         // const perp = await ethers.getContractAt(IERC20Artifact.abi, "address")
         // await deployments.save("PERP", { abi: perp.abi, address: perp.address })
-    } else if (hre.network.name === "rinkeby") {
+    } else if (hre.network.name === "optimismKovan") {
         const perp = await deployments.deploy(DeploymentsKey.PERP_TEST, {
             from: deployer.address,
             contract: ContractFullyQualifiedName.TestERC20,
