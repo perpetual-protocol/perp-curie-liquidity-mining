@@ -2,7 +2,8 @@ import { DeployFunction } from "hardhat-deploy/types"
 import { HardhatRuntimeEnvironment } from "hardhat/types"
 import stringify from "json-stable-stringify"
 import _ from "lodash"
-import { CONTRACT_FILES, getTag } from "../scripts/deploy"
+import { CONTRACT_FILES } from "../scripts/deploy/constants"
+import { getTag } from "../scripts/deploy/helpers"
 import { writeFile } from "../scripts/files"
 
 interface Metadata {

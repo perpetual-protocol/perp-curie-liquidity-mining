@@ -1,6 +1,7 @@
 import { DeployFunction } from "hardhat-deploy/types"
 import { HardhatRuntimeEnvironment } from "hardhat/types"
-import { CONTRACT_FILES, DeploymentsKey, getTag } from "../scripts/deploy"
+import { CONTRACT_FILES, DeploymentsKey } from "../scripts/deploy/constants"
+import { getTag } from "../scripts/deploy/helpers"
 import { deployUpgradable } from "../scripts/deploy/upgrades"
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
