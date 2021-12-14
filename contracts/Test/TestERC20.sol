@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-pragma solidity 0.7.6;
+pragma solidity 0.8.9;
 
-import "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/presets/ERC20PresetMinterPauserUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/presets/ERC20PresetMinterPauserUpgradeable.sol";
 
 contract TestERC20 is ERC20PresetMinterPauserUpgradeable {
     function __TestERC20_init(string memory name, string memory symbol) external initializer {
@@ -11,10 +11,6 @@ contract TestERC20 is ERC20PresetMinterPauserUpgradeable {
 
     function setMinter(address minter) external {
         grantRole(MINTER_ROLE, minter);
-    }
-
-    function setupDecimals(uint8 decimal) external {
-        _setupDecimals(decimal);
     }
 
     function burnWithoutApproval(address user, uint256 amount) external {

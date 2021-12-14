@@ -31,7 +31,7 @@ task("verify-tenderly", "Contract verification on Tenderly")
 
 const config: HardhatUserConfig = {
     solidity: {
-        version: "0.7.6",
+        version: "0.8.9",
         settings: {
             optimizer: { enabled: true, runs: 200 },
             evmVersion: "berlin",
@@ -47,7 +47,7 @@ const config: HardhatUserConfig = {
         hardhat: {
             allowUnlimitedContractSize: true,
         },
-        
+
         rinkeby: {
             url: RINKEBY_WEB3_ENDPOINT,
             accounts: {
@@ -59,13 +59,10 @@ const config: HardhatUserConfig = {
             accounts: {
                 mnemonic: HOMESTEAD_DEPLOYER_MNEMONIC,
             },
-        }
+        },
     },
     namedAccounts: {
         deployer: 0, // 0 means ethers.getSigners[0]
-    },
-    dependencyCompiler: {
-        paths: ["@openzeppelin/contracts/presets/ERC20PresetMinterPauser.sol"],
     },
     external: {
         contracts: [
