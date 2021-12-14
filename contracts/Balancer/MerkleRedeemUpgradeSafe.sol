@@ -1,6 +1,6 @@
 // source: https://github.com/balancer-labs/erc20-redeemable/blob/master/merkle/contracts/MerkleRedeem.sol
 // changes:
-// 1. add license and update solidity version to 0.7.6
+// 1. add license and update solidity version to 0.8.9
 // 2. make it upgradeable
 
 // SPDX-License-Identifier: GPL-2.0-or-later
