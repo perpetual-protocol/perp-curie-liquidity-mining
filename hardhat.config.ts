@@ -64,6 +64,9 @@ const config: HardhatUserConfig = {
     namedAccounts: {
         deployer: 0, // 0 means ethers.getSigners[0]
     },
+    dependencyCompiler: {
+        paths: ["@openzeppelin/contracts/token/ERC20/presets/ERC20PresetMinterPauser.sol"],
+    },
     external: {
         contracts: [
             {
