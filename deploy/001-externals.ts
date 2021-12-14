@@ -4,7 +4,7 @@ import { DeployFunction } from "hardhat-deploy/types"
 import { HardhatRuntimeEnvironment } from "hardhat/types"
 import TestERC20 from "../artifacts/contracts/Test/TestERC20.sol/TestERC20.json"
 import { ExternalContractFullyQualifiedName, ExternalDeploymentsKey } from "../scripts/deploy/constants"
-import { getTag, getTestUsdc } from "../scripts/deploy/helpers"
+import { getTag, getTestPerp } from "../scripts/deploy/helpers"
 import { deployUpgradable } from "../scripts/deploy/upgrades"
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
@@ -15,34 +15,34 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const deployer = await ethers.getNamedSigner("deployer")
     const { usdc } = await getNamedAccounts()
 
-    // prepare USDC
-    const deploymentKey = ExternalDeploymentsKey.USDC
+    // prepare PERP
+    const deploymentKey = ExternalDeploymentsKey.PERP
     if (hre.network.name === "optimism") {
         await deployments.save(deploymentKey, { abi: TestERC20.abi, address: usdc })
-        console.log(`Saved USDC: ${usdc}`)
+        console.log(`Saved perp: ${usdc}`)
     } else if (hre.network.name === "optimismKovan" || hre.network.name === "hardhat") {
         const contractFullyQualifiedName = ExternalContractFullyQualifiedName.TestERC20
         const proxyExecute = {
             init: {
                 methodName: "__TestERC20_init",
-                args: ["TestUSDC", "TestUSDC", 6],
+                args: ["TestPERP", "TestPERP", 6],
             },
         }
         await deployUpgradable(deploymentKey, contractFullyQualifiedName, proxyExecute)
 
-        const testUsdc = await getTestUsdc()
+        const testPerp = await getTestPerp()
 
-        const minterRole = await testUsdc.MINTER_ROLE()
-        const decimals = await testUsdc.decimals()
+        const minterRole = await testPerp.MINTER_ROLE()
+        const decimals = await testPerp.decimals()
         const billion = parseUnits("1000000000", decimals)
-        if (!(await testUsdc.hasRole(minterRole, deployer.address))) {
-            console.log(`Executing testUsdc.setMinter(${deployer.address})`)
-            await (await testUsdc.setMinter(deployer.address)).wait()
-            console.log(`Executed testUsdc.setMinter(${deployer.address})`)
+        if (!(await testPerp.hasRole(minterRole, deployer.address))) {
+            console.log(`Executing testPerp.setMinter(${deployer.address})`)
+            await (await testPerp.setMinter(deployer.address)).wait()
+            console.log(`Executed testPerp.setMinter(${deployer.address})`)
         }
-        console.log(`Executing testUsdc.mint(${deployer.address}, ${billion})`)
-        await (await testUsdc.mint(deployer.address, billion)).wait()
-        console.log(`Executed testUsdc.mint(${deployer.address}, ${billion})`)
+        console.log(`Executing testPerp.mint(${deployer.address}, ${billion})`)
+        await (await testPerp.mint(deployer.address, billion)).wait()
+        console.log(`Executed testPerp.mint(${deployer.address}, ${billion})`)
     }
 }
 func.tags = [getTag(__filename)]

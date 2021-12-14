@@ -41,10 +41,10 @@ export async function getProxyAdmin(): Promise<ProxyAdmin> {
     return contractFactory.attach(deployment.address) as ProxyAdmin
 }
 
-export async function getTestUsdc(): Promise<TestERC20> {
+export async function getTestPerp(): Promise<TestERC20> {
     const { deployments } = hre
 
-    const deployment = await deployments.get(ExternalDeploymentsKey.USDC)
+    const deployment = await deployments.get(ExternalDeploymentsKey.PERP)
     const contractFactory = await ethers.getContractFactory(ExternalContractFullyQualifiedName.TestERC20)
     return contractFactory.attach(deployment.address) as TestERC20
 }

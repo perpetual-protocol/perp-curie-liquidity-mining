@@ -20,7 +20,7 @@ export enum DeploymentsKey {
     PerpLiquidityMining = "PerpLiquidityMining",
 
     // external
-    PERP_TEST = "PERP_TEST",
+    PERP = "PERP",
 }
 
 export const CONTRACT_FILES = {
@@ -28,13 +28,12 @@ export const CONTRACT_FILES = {
 }
 
 export enum ExternalContractFullyQualifiedName {
-    TestERC20 = "contracts/test/TestERC20.sol:TestERC20", // only used in testnet
+    TestERC20 = "contracts/Test/TestERC20.sol:TestERC20", // only used in testnet
 }
 
 export enum ExternalDeploymentsKey {
     DefaultProxyAdmin = "DefaultProxyAdmin",
-    UniswapV3Factory = "UniswapV3Factory",
-    USDC = "USDC",
+    PERP = "PERP",
 }
 
 // NOTE: If we change this value, we must also change saveOpenZeppelinManifest() - proxy kind
