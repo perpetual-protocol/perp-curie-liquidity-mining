@@ -1,14 +1,11 @@
 import hre, { ethers } from "hardhat"
 import { Deployment } from "hardhat-deploy/types"
 import path from "path"
-import { TestERC20 } from "../../typechain"
 import { ProxyAdmin } from "../../typechain/openzeppelin/ProxyAdmin"
 import {
     AddressCondition,
     CONTRACT_FILES,
-    DeploymentsKey,
-    ExternalContractFullyQualifiedName,
-    ExternalDeploymentsKey,
+    DeploymentsKey, ExternalDeploymentsKey
 } from "./constants"
 
 export async function getDeploymentOrNull(deploymentKey: string): Promise<Deployment> {
@@ -39,14 +36,6 @@ export async function getProxyAdmin(): Promise<ProxyAdmin> {
     const deployment = await deployments.get(ExternalDeploymentsKey.DefaultProxyAdmin)
     const contractFactory = await ethers.getContractFactory(deployment.abi, deployment.bytecode)
     return contractFactory.attach(deployment.address) as ProxyAdmin
-}
-
-export async function getTestPerp(): Promise<TestERC20> {
-    const { deployments } = hre
-
-    const deployment = await deployments.get(ExternalDeploymentsKey.PERP)
-    const contractFactory = await ethers.getContractFactory(ExternalContractFullyQualifiedName.TestERC20)
-    return contractFactory.attach(deployment.address) as TestERC20
 }
 
 export async function increaseNonce(condition: AddressCondition, targetAddr: string): Promise<void> {

@@ -8,14 +8,14 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     console.log(`\nRunning: ${__filename}`)
 
     const { deployments } = hre
-    const perpToken = await deployments.get(DeploymentsKey.PERP)
+    const opPerpToken = await deployments.get(DeploymentsKey.OpPerpToken)
 
     const deploymentKey = DeploymentsKey.PerpLiquidityMining
     const contractFullyQualifiedName = CONTRACT_FILES[deploymentKey]
     const proxyExecute = {
         init: {
             methodName: "initialize",
-            args: [perpToken.address],
+            args: [opPerpToken.address],
         },
     }
 

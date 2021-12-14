@@ -1,4 +1,5 @@
 import "@nomiclabs/hardhat-ethers"
+import "@nomiclabs/hardhat-etherscan"
 import "@nomiclabs/hardhat-waffle"
 import "@openzeppelin/hardhat-upgrades"
 import "@tenderly/hardhat-tenderly"
@@ -10,10 +11,13 @@ import "hardhat-deploy-ethers"
 import "hardhat-gas-reporter"
 import { HardhatUserConfig } from "hardhat/config"
 import "solidity-coverage"
+import { ETHERSCAN_API_KEY } from "./constants"
 import "./mocha-test"
 import { getMnemonic, getUrl } from "./scripts/hardhatConfig"
 
 enum ChainId {
+    HOMESTEAD_CHAIN_ID = 1,
+    KOVAN_CHAIN_ID = 42,
     OPTIMISM_CHAIN_ID = 10,
     OPTIMISM_KOVAN_CHAIN_ID = 69,
 }
@@ -58,6 +62,14 @@ const config: HardhatUserConfig = {
     },
     namedAccounts: {
         deployer: 0, // 0 means ethers.getSigners[0]
+        optimismL2BridgeAddress: {
+            [ChainId.OPTIMISM_CHAIN_ID]: "0x4200000000000000000000000000000000000010",
+            [ChainId.OPTIMISM_KOVAN_CHAIN_ID]: "0x4200000000000000000000000000000000000010",
+        },
+        perpTokenAddress: {
+            [ChainId.OPTIMISM_CHAIN_ID]: "0xbC396689893D065F41bc2C6EcbeE5e0085233447",
+            [ChainId.OPTIMISM_KOVAN_CHAIN_ID]: "0xbC396689893D065F41bc2C6EcbeE5e0085233447",
+        },
     },
     dependencyCompiler: {
         paths: ["@openzeppelin/contracts/token/ERC20/presets/ERC20PresetMinterPauser.sol"],
@@ -82,6 +94,9 @@ const config: HardhatUserConfig = {
         jobs: 4,
         timeout: 120000,
         color: true,
+    },
+    etherscan: {
+        apiKey: ETHERSCAN_API_KEY,
     },
 }
 

@@ -2,12 +2,13 @@ import fs from "fs"
 import hre from "hardhat"
 import { resolve } from "path"
 
-const exceptionList = ["DefaultProxyAdmin", "UniswapV3Factory", "BTCUSDChainlinkPriceFeed", "ETHUSDChainlinkPriceFeed"]
+const exceptionList = ["DefaultProxyAdmin", "OpPerpToken"]
 
 interface ContractInfo {
     name: string
     address: string
     args: any[]
+    contract: string
 }
 
 export function getContractsInfo(network: String): Array<ContractInfo> {
@@ -24,11 +25,14 @@ export function getContractsInfo(network: String): Array<ContractInfo> {
         } else {
             path = `./deployments/${network}/${name}_Implementation.json`
         }
+        const contract = `contracts/${name}.sol:${name}`
         const jsonStr = fs.readFileSync(resolve(path), "utf8")
-        const { address } = JSON.parse(jsonStr)
+        const { address, args } = JSON.parse(jsonStr)
         contractsInfo.push({
             name,
             address,
+            args,
+            contract,
         })
     }
     return contractsInfo
