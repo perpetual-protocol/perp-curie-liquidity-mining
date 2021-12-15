@@ -68,7 +68,7 @@ const config: HardhatUserConfig = {
         },
         perpTokenAddress: {
             [ChainId.OPTIMISM_CHAIN_ID]: "0xbC396689893D065F41bc2C6EcbeE5e0085233447",
-            [ChainId.OPTIMISM_KOVAN_CHAIN_ID]: "0xbC396689893D065F41bc2C6EcbeE5e0085233447",
+            [ChainId.OPTIMISM_KOVAN_CHAIN_ID]: "0x002BE8A5961e0f352092D6693133A6944b7846Ba",
         },
     },
     dependencyCompiler: {
