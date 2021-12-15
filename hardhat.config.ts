@@ -1,5 +1,7 @@
 import "@nomiclabs/hardhat-ethers"
+import "@nomiclabs/hardhat-etherscan"
 import "@nomiclabs/hardhat-waffle"
+import "@openzeppelin/hardhat-upgrades"
 import "@tenderly/hardhat-tenderly"
 import "@typechain/hardhat"
 import "hardhat-contract-sizer"
@@ -7,27 +9,23 @@ import "hardhat-dependency-compiler"
 import "hardhat-deploy"
 import "hardhat-deploy-ethers"
 import "hardhat-gas-reporter"
-import { HardhatUserConfig, task } from "hardhat/config"
+import { HardhatUserConfig } from "hardhat/config"
 import "solidity-coverage"
-import {
-    HOMESTEAD_DEPLOYER_MNEMONIC,
-    HOMESTEAD_WEB3_ENDPOINT,
-    RINKEBY_DEPLOYER_MNEMONIC,
-    RINKEBY_WEB3_ENDPOINT,
-} from "./constants"
+import { ETHERSCAN_API_KEY } from "./constants"
 import "./mocha-test"
-import { verifyContract } from "./scripts/verify-tenderly"
+import { getMnemonic, getUrl } from "./scripts/hardhatConfig"
 
 enum ChainId {
-    RINKEBY_CHAIN_ID = 4,
     HOMESTEAD_CHAIN_ID = 1,
+    KOVAN_CHAIN_ID = 42,
+    OPTIMISM_CHAIN_ID = 10,
+    OPTIMISM_KOVAN_CHAIN_ID = 69,
 }
 
-task("verify-tenderly", "Contract verification on Tenderly")
-    .addParam("stage", "stage")
-    .setAction(async ({ stage }, hre) => {
-        await verifyContract(hre, stage)
-    })
+enum CompanionNetwork {
+    optimism = "optimism",
+    optimismKovan = "optimismKovan",
+}
 
 const config: HardhatUserConfig = {
     solidity: {
@@ -47,22 +45,33 @@ const config: HardhatUserConfig = {
         hardhat: {
             allowUnlimitedContractSize: true,
         },
-
-        rinkeby: {
-            url: RINKEBY_WEB3_ENDPOINT,
+        optimismKovan: {
+            url: getUrl(CompanionNetwork.optimismKovan),
             accounts: {
-                mnemonic: RINKEBY_DEPLOYER_MNEMONIC,
+                mnemonic: getMnemonic(CompanionNetwork.optimismKovan),
             },
+            chainId: ChainId.OPTIMISM_KOVAN_CHAIN_ID,
         },
-        homestead: {
-            url: HOMESTEAD_WEB3_ENDPOINT,
+        optimism: {
+            url: getUrl(CompanionNetwork.optimism),
             accounts: {
-                mnemonic: HOMESTEAD_DEPLOYER_MNEMONIC,
+                mnemonic: getMnemonic(CompanionNetwork.optimism),
             },
+            chainId: ChainId.OPTIMISM_CHAIN_ID,
         },
     },
     namedAccounts: {
         deployer: 0, // 0 means ethers.getSigners[0]
+        optimismL2BridgeAddress: {
+            [ChainId.OPTIMISM_CHAIN_ID]: "0x4200000000000000000000000000000000000010",
+            [ChainId.OPTIMISM_KOVAN_CHAIN_ID]: "0x4200000000000000000000000000000000000010",
+        },
+        perpTokenAddress: {
+            // Perp token address on mainnet
+            [ChainId.OPTIMISM_CHAIN_ID]: "0xbC396689893D065F41bc2C6EcbeE5e0085233447",
+            // Perp token address on kovan
+            [ChainId.OPTIMISM_KOVAN_CHAIN_ID]: "0x002BE8A5961e0f352092D6693133A6944b7846Ba",
+        },
     },
     dependencyCompiler: {
         paths: ["@openzeppelin/contracts/token/ERC20/presets/ERC20PresetMinterPauser.sol"],
@@ -87,6 +96,9 @@ const config: HardhatUserConfig = {
         jobs: 4,
         timeout: 120000,
         color: true,
+    },
+    etherscan: {
+        apiKey: ETHERSCAN_API_KEY,
     },
 }
 

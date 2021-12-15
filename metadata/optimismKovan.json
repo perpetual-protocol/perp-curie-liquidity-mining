@@ -1,0 +1,18 @@
+{
+    "contracts": {
+        "OpPerpToken": {
+            "address": "0x51B2bBeb6808Bd81be2a163Bce7374F3EC334E82",
+            "createdBlockNumber": 404131,
+            "name": "contracts/OpPerpToken.sol:OpPerpToken"
+        },
+        "PerpLiquidityMining": {
+            "address": "0x28Ed7981b9483436C75C286E91820864A1bF91AB",
+            "createdBlockNumber": 404155,
+            "name": "contracts/PerpLiquidityMining.sol:PerpLiquidityMining"
+        }
+    },
+    "externalContracts": {
+        "DefaultProxyAdmin": "0x594Bc79810540DFB06BaB75637Eaa84EE6ADdBB2"
+    },
+    "network": "optimismKovan"
+}

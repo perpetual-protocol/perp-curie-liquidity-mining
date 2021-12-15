@@ -2,7 +2,8 @@ import { DeployFunction } from "hardhat-deploy/types"
 import { HardhatRuntimeEnvironment } from "hardhat/types"
 import stringify from "json-stable-stringify"
 import _ from "lodash"
-import { CONTRACT_FILES } from "../scripts/deploy"
+import { CONTRACT_FILES } from "../scripts/deploy/constants"
+import { getTag } from "../scripts/deploy/helpers"
 import { writeFile } from "../scripts/files"
 
 interface Metadata {
@@ -58,10 +59,9 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         })
     console.log(metadata)
 
-    const stage = "staging" // TODO
     const metadataJson = stringify(metadata, { space: 4 })
-    await writeFile(`${process.cwd()}/metadata/${stage}.json`, metadataJson)
+    await writeFile(`${process.cwd()}/metadata/${hre.network.name}.json`, metadataJson)
 }
-func.tags = ["metadata"]
+func.tags = [getTag(__filename)]
 
 export default func
