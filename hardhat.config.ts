@@ -67,7 +67,9 @@ const config: HardhatUserConfig = {
             [ChainId.OPTIMISM_KOVAN_CHAIN_ID]: "0x4200000000000000000000000000000000000010",
         },
         perpTokenAddress: {
+            // Perp token address on mainnet
             [ChainId.OPTIMISM_CHAIN_ID]: "0xbC396689893D065F41bc2C6EcbeE5e0085233447",
+            // Perp token address on kovan
             [ChainId.OPTIMISM_KOVAN_CHAIN_ID]: "0x002BE8A5961e0f352092D6693133A6944b7846Ba",
         },
     },
