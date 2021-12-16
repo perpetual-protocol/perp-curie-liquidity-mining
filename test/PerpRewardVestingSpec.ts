@@ -1,8 +1,10 @@
+import { LogDescription } from "@ethersproject/abi"
+import { TransactionReceipt } from "@ethersproject/abstract-provider"
 import { parseEther } from "@ethersproject/units"
 import { expect } from "chai"
 import { ethers, waffle } from "hardhat"
+import { TestPerpLiquidityMining } from "../typechain"
 import { ERC20PresetMinterPauser } from "../typechain/openzeppelin"
-import { TestPerpLiquidityMining } from "../typechain/TestPerpLiquidityMining"
 
 describe("liquidity mining", () => {
     const RANDOM_BYTES32_1 = "0x7c1b1e7c2eaddafdf52250cba9679e5b30014a9d86a0e2af17ec4cee24a5fc80"
@@ -24,6 +26,20 @@ describe("liquidity mining", () => {
 
         await token.connect(admin).approve(perpLiquidityMining.address, parseEther("1000000"))
     })
+
+    async function findTransferEvent(receipt: TransactionReceipt): Promise<LogDescription[]> {
+        const tokenFactory = await ethers.getContractFactory("ERC20PresetMinterPauser")
+        const topic = tokenFactory.interface.getEventTopic("Transfer")
+        return receipt.logs.filter(log => log.topics[0] === topic).map(log => tokenFactory.interface.parseLog(log))
+    }
+
+    async function findClaimedEvent(receipt: TransactionReceipt): Promise<LogDescription[]> {
+        const merkleRedeemUpgradeSafeF = await ethers.getContractFactory("MerkleRedeemUpgradeSafe")
+        const topic = merkleRedeemUpgradeSafeF.interface.getEventTopic("Claimed")
+        return receipt.logs
+            .filter(log => log.topics[0] === topic)
+            .map(log => merkleRedeemUpgradeSafeF.interface.parseLog(log))
+    }
 
     describe("seedAllocations()", () => {
         it("verify balances after seeding", async () => {
@@ -126,7 +142,17 @@ describe("liquidity mining", () => {
                 },
             ]
 
-            await perpLiquidityMining.connect(alice).claimWeeks(alice.address, claimsArr)
+            const receipt = await (await perpLiquidityMining.connect(alice).claimWeeks(alice.address, claimsArr)).wait()
+            const transferEvents = await findTransferEvent(receipt as TransactionReceipt)
+            const claimedEvents = await findClaimedEvent(receipt as TransactionReceipt)
+
+            expect(transferEvents.length).to.be.eq(1)
+            expect(transferEvents[0].args.from).to.be.eq(perpLiquidityMining.address)
+            expect(transferEvents[0].args.to).to.be.eq(alice.address)
+            expect(transferEvents[0].args.value).to.be.eq(parseEther("500000"))
+            expect(claimedEvents.length).to.be.eq(1)
+            expect(claimedEvents[0].args._claimant).to.be.eq(alice.address)
+            expect(claimedEvents[0].args._balance).to.be.eq(parseEther("500000"))
             expect(await token.balanceOf(alice.address)).to.eq(parseEther("500000"))
             expect(await token.balanceOf(perpLiquidityMining.address)).to.eq(parseEther("0"))
             expect(await perpLiquidityMining.claimed("2", alice.address)).to.eq(true)

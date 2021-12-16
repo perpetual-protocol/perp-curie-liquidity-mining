@@ -7,15 +7,15 @@ import { deployUpgradable } from "../scripts/deploy/upgrades"
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     console.log(`\nRunning: ${__filename}`)
 
-    const { deployments } = hre
-    const opPerpToken = await deployments.get(DeploymentsKey.OpPerpToken)
+    const { getNamedAccounts } = hre
+    const { perpTokenAddress } = await getNamedAccounts()
 
     const deploymentKey = DeploymentsKey.PerpLiquidityMining
     const contractFullyQualifiedName = CONTRACT_FILES[deploymentKey]
     const proxyExecute = {
         init: {
             methodName: "initialize",
-            args: [opPerpToken.address],
+            args: [perpTokenAddress],
         },
     }
 
