@@ -29,7 +29,7 @@ enum CompanionNetwork {
 
 const config: HardhatUserConfig = {
     solidity: {
-        version: "0.8.9",
+        version: "0.7.6",
         settings: {
             optimizer: { enabled: true, runs: 200 },
             evmVersion: "berlin",
@@ -74,7 +74,7 @@ const config: HardhatUserConfig = {
         },
     },
     dependencyCompiler: {
-        paths: ["@openzeppelin/contracts/token/ERC20/presets/ERC20PresetMinterPauser.sol"],
+        paths: ["@openzeppelin/contracts/presets/ERC20PresetMinterPauser.sol"],
     },
     external: {
         contracts: [
