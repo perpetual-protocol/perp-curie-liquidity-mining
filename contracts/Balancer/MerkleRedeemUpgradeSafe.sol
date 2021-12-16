@@ -20,7 +20,7 @@ contract MerkleRedeemUpgradeSafe is IMerkleRedeem, PerpOwnableUpgrade {
     mapping(uint256 => bytes32) public weekMerkleRoots;
     mapping(uint256 => mapping(address => bool)) public claimed;
 
-    IERC20 public token;
+    IERC20 internal token;
 
     //**********************************************************//
     //    The above state variables can not change the order    //
