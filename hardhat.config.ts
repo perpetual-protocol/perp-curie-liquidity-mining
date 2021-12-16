@@ -29,7 +29,7 @@ enum CompanionNetwork {
 
 const config: HardhatUserConfig = {
     solidity: {
-        version: "0.8.9",
+        version: "0.7.6",
         settings: {
             optimizer: { enabled: true, runs: 200 },
             evmVersion: "berlin",
@@ -67,19 +67,19 @@ const config: HardhatUserConfig = {
             [ChainId.OPTIMISM_KOVAN_CHAIN_ID]: "0x4200000000000000000000000000000000000010",
         },
         perpTokenAddress: {
-            // Perp token address on mainnet
-            [ChainId.OPTIMISM_CHAIN_ID]: "0xbC396689893D065F41bc2C6EcbeE5e0085233447",
-            // Perp token address on kovan
-            [ChainId.OPTIMISM_KOVAN_CHAIN_ID]: "0x002BE8A5961e0f352092D6693133A6944b7846Ba",
+            // Perp token address on optimism
+            // [ChainId.OPTIMISM_CHAIN_ID]: "",
+            // Perp token address on optimismKovan
+            [ChainId.OPTIMISM_KOVAN_CHAIN_ID]: "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb",
         },
     },
     dependencyCompiler: {
-        paths: ["@openzeppelin/contracts/token/ERC20/presets/ERC20PresetMinterPauser.sol"],
+        paths: ["@openzeppelin/contracts/presets/ERC20PresetMinterPauser.sol"],
     },
     external: {
         contracts: [
             {
-                artifacts: "node_modules/@openzeppelin/contracts-upgradeable/build",
+                artifacts: "node_modules/@openzeppelin/contracts/build",
             },
         ],
     },
