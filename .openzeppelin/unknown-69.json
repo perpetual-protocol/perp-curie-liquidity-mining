@@ -152,6 +152,112 @@
           }
         }
       }
+    },
+    "d6f0ba4ccbc9c4afaaab25a57e82233d73c5c56440a339a923ed02a619ee43e3": {
+      "address": "0x816D6DC036A1AF7575A4f80E576AdB36EABECE46",
+      "txHash": "0x9dd95f8329944c526e7dc245d229232a23844bbf773d125b5210a9677a7b0346",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:37"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:42"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "PerpOwnableUpgrade",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "contracts/utils/PerpOwnableUpgrade.sol:20"
+          },
+          {
+            "contract": "PerpOwnableUpgrade",
+            "label": "_candidate",
+            "type": "t_address",
+            "src": "contracts/utils/PerpOwnableUpgrade.sol:21"
+          },
+          {
+            "contract": "PerpOwnableUpgrade",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "contracts/utils/PerpOwnableUpgrade.sol:96"
+          },
+          {
+            "contract": "MerkleRedeemUpgradeSafe",
+            "label": "weekMerkleRoots",
+            "type": "t_mapping(t_uint256,t_bytes32)",
+            "src": "contracts/Balancer/MerkleRedeemUpgradeSafe.sol:23"
+          },
+          {
+            "contract": "MerkleRedeemUpgradeSafe",
+            "label": "claimed",
+            "type": "t_mapping(t_uint256,t_mapping(t_address,t_bool))",
+            "src": "contracts/Balancer/MerkleRedeemUpgradeSafe.sol:24"
+          },
+          {
+            "contract": "MerkleRedeemUpgradeSafe",
+            "label": "token",
+            "type": "t_contract(IERC20)4186",
+            "src": "contracts/Balancer/MerkleRedeemUpgradeSafe.sol:26"
+          },
+          {
+            "contract": "MerkleRedeemUpgradeSafe",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "contracts/Balancer/MerkleRedeemUpgradeSafe.sol:41"
+          },
+          {
+            "contract": "PerpLiquidityMining",
+            "label": "merkleRootIndexes",
+            "type": "t_array(t_uint256)dyn_storage",
+            "src": "contracts/PerpLiquidityMining.sol:12"
+          }
+        ],
+        "types": {
+          "t_array(t_uint256)dyn_storage": {
+            "label": "uint256[]"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_mapping(t_uint256,t_bytes32)": {
+            "label": "mapping(uint256 => bytes32)"
+          },
+          "t_bytes32": {
+            "label": "bytes32"
+          },
+          "t_mapping(t_uint256,t_mapping(t_address,t_bool))": {
+            "label": "mapping(uint256 => mapping(address => bool))"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)"
+          },
+          "t_address": {
+            "label": "address"
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_contract(IERC20)4186": {
+            "label": "contract IERC20"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          }
+        }
+      }
     }
   }
 }
