@@ -7,6 +7,10 @@ and this  projroject aadhheres to [Semantic Versioning](https://semver.org/spec/
 
 ## [[unreleased]
 
+#### [0.2.3-staging] - 2021-12-17
+
+- Not pack test contracts in npm package.
+
 #### [0.2.2-staging] - 2021-12-16
 
 - Add interface `IMerkleRedeem` of MerkleRedeemUpgradeSafe.
