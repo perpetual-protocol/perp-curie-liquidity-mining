@@ -14,17 +14,14 @@ export enum DeployConfig {
 }
 export enum ContractFullyQualifiedName {
     PerpLiquidityMining = "contracts/PerpLiquidityMining.sol:PerpLiquidityMining",
-    OpPerpToken = "contracts/OpPerpToken.sol:OpPerpToken",
 }
 
 export enum DeploymentsKey {
     PerpLiquidityMining = "PerpLiquidityMining",
-    OpPerpToken = "OpPerpToken",
 }
 
 export const CONTRACT_FILES = {
     [DeploymentsKey.PerpLiquidityMining]: ContractFullyQualifiedName.PerpLiquidityMining,
-    [DeploymentsKey.OpPerpToken]: ContractFullyQualifiedName.OpPerpToken,
 }
 
 export enum ExternalContractFullyQualifiedName {
@@ -33,7 +30,6 @@ export enum ExternalContractFullyQualifiedName {
 
 export enum ExternalDeploymentsKey {
     DefaultProxyAdmin = "DefaultProxyAdmin",
-    OpPerpToken = "OpPerpToken",
 }
 
 // NOTE: If we change this value, we must also change saveOpenZeppelinManifest() - proxy kind
