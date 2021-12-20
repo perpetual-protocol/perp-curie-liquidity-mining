@@ -72,6 +72,11 @@ const config: HardhatUserConfig = {
             // Perp token address on optimismKovan
             [ChainId.OPTIMISM_KOVAN_CHAIN_ID]: "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb",
         },
+        liquidityMiningOwner: {
+            // [ChainId.OPTIMISM_CHAIN_ID]: "",
+            // Testnet owner : Davis EOA address
+            [ChainId.OPTIMISM_KOVAN_CHAIN_ID]: "0x270D2ce74312F43B20e3547d0e58E0CC2671a8A5",
+        },
     },
     dependencyCompiler: {
         paths: ["@openzeppelin/contracts/presets/ERC20PresetMinterPauser.sol"],
