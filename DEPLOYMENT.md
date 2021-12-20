@@ -64,7 +64,7 @@ args:
 
 6. Verify contracts on Etherscan
    - run `export ETHERSCAN_API_KEY=YOUR_ETHERSCAN_API_KEY`
-   - run `npm run etherscan:optimismKovan`
+   - run `npm run etherscan:optimismKovan -- [--contract contractName]`
 
 7. Verify what's included in the packed npm package
 
