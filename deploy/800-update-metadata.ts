@@ -59,7 +59,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         })
     console.log(metadata)
 
-    const metadataJson = stringify(metadata, { space: 4 })
+    const metadataJson = stringify(metadata, { space: 2 })
     await writeFile(`${process.cwd()}/metadata/${hre.network.name}.json`, metadataJson)
 }
 func.tags = [getTag(__filename)]
