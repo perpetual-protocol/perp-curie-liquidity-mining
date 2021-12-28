@@ -1,5 +1,10 @@
 {
   "contracts": {
+    "GasRefund": {
+      "address": "0xF2252F7216c89769ca99d567b63176c1EF270882",
+      "createdBlockNumber": 637591,
+      "name": "contracts/PerpLiquidityMining.sol:PerpLiquidityMining"
+    },
     "PerpLiquidityMining": {
       "address": "0xf60d355281723cEC9baa3D1C971Bb49E9f9aF633",
       "createdBlockNumber": 425908,

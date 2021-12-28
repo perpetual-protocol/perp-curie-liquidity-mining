@@ -86,9 +86,8 @@ const config: HardhatUserConfig = {
             [ChainId.OPTIMISM_KOVAN_CHAIN_ID]: "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb",
         },
         liquidityMiningOwner: {
-            // [ChainId.OPTIMISM_CHAIN_ID]: "",
-            // Testnet owner : Davis EOA address
-            [ChainId.OPTIMISM_KOVAN_CHAIN_ID]: "0x270D2ce74312F43B20e3547d0e58E0CC2671a8A5",
+            [ChainId.OPTIMISM_CHAIN_ID]: "0xDcf664d0f76E99eaA2DBD569474d0E75dC899FCD",
+            [ChainId.OPTIMISM_KOVAN_CHAIN_ID]: "0xAbE2323C84edDDE78b9dEB001eea9b2b3fD3538A",
         },
     },
     dependencyCompiler: {

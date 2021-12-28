@@ -11,9 +11,10 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     const { liquidityMiningOwner } = await getNamedAccounts()
 
-    const perpLiquidityMining = DeploymentsKey.PerpLiquidityMining
-
-    await transferOwnerTo(perpLiquidityMining, liquidityMiningOwner)
+    for (const key of Object.keys(DeploymentsKey)) {
+        const contract = DeploymentsKey[key]
+        await transferOwnerTo(contract, liquidityMiningOwner)
+    }
 }
 func.tags = [getTag(__filename)]
 

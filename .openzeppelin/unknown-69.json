@@ -44,12 +44,22 @@
       "address": "0xf60d355281723cEC9baa3D1C971Bb49E9f9aF633",
       "txHash": "0x4edc3ba8e713f91e5cbc6d26f79acbe982b083642a7ed6c03f2887fbc8669339",
       "kind": "transparent"
+    },
+    {
+      "address": "0x5133f5BEAf23388b6205911Bf703334E5a11eA3D",
+      "txHash": "0xb01d6388891a387da67dae22602ee6e610aa6224c97e92b888c0c00175d1c19f",
+      "kind": "transparent"
+    },
+    {
+      "address": "0xF2252F7216c89769ca99d567b63176c1EF270882",
+      "txHash": "0xa4037717dbee288b0a3682cde254f33358fa98bce11bfdfc646dd07234692e5a",
+      "kind": "transparent"
     }
   ],
   "impls": {
     "ffbfa16bec3984568b6db59d75b7fac31478774d502987739d80cfc1fd8a09fd": {
-      "address": "0x7A89933b1B23331aee2f54B0495afD6ABe51520A",
-      "txHash": "0x96093631bf40a0ced3f68efc4731d66cb0d92d9bbefc4bddf7409a627efcd7d3",
+      "address": "0xa3E342def3573503eC065b1efAFF7632d6525905",
+      "txHash": "0x6f92f763a663b6340678af66fca9b43bce0611014bac856d434ee470fb53a901",
       "layout": {
         "storage": [
           {
@@ -103,7 +113,7 @@
           {
             "contract": "MerkleRedeemUpgradeSafe",
             "label": "token",
-            "type": "t_contract(IERC20)503",
+            "type": "t_contract(IERC20)4092",
             "src": "contracts/Balancer/MerkleRedeemUpgradeSafe.sol:23"
           },
           {
@@ -144,7 +154,7 @@
           "t_bool": {
             "label": "bool"
           },
-          "t_contract(IERC20)503": {
+          "t_contract(IERC20)4092": {
             "label": "contract IERC20"
           },
           "t_array(t_uint256)50_storage": {
