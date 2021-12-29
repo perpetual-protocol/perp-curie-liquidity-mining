@@ -13,7 +13,7 @@ import { HardhatUserConfig, task } from "hardhat/config"
 import "solidity-coverage"
 import { ETHERSCAN_API_KEY } from "./constants"
 import "./mocha-test"
-import { getMnemonic, getUrl } from "./scripts/hardhatConfig"
+import { getMnemonic, getUrl, tenderlyConfig } from "./scripts/hardhatConfig"
 import { verifyOnEtherscan, verifyOnTenderly } from "./scripts/verify"
 
 enum ChainId {
@@ -37,6 +37,13 @@ task("etherscanVerify", "Verify on etherscan")
 task("tenderlyVerify", "Verify on tenderly")
     .addOptionalParam("contract", "Contract need to verify")
     .setAction(async ({ contract }, hre) => {
+        const network = hre.network.name
+
+        hre.config.tenderly = {
+            project: tenderlyConfig[network],
+            username: "perpprotocol",
+        }
+
         await verifyOnTenderly(hre, contract)
     })
 
@@ -81,14 +88,13 @@ const config: HardhatUserConfig = {
         },
         perpTokenAddress: {
             // Perp token address on optimism
-            // [ChainId.OPTIMISM_CHAIN_ID]: "",
+            [ChainId.OPTIMISM_CHAIN_ID]: "0x9e1028F5F1D5eDE59748FFceE5532509976840E0",
             // Perp token address on optimismKovan
             [ChainId.OPTIMISM_KOVAN_CHAIN_ID]: "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb",
         },
         liquidityMiningOwner: {
-            // [ChainId.OPTIMISM_CHAIN_ID]: "",
-            // Testnet owner : Davis EOA address
-            [ChainId.OPTIMISM_KOVAN_CHAIN_ID]: "0x270D2ce74312F43B20e3547d0e58E0CC2671a8A5",
+            [ChainId.OPTIMISM_CHAIN_ID]: "0xDcf664d0f76E99eaA2DBD569474d0E75dC899FCD",
+            [ChainId.OPTIMISM_KOVAN_CHAIN_ID]: "0xAbE2323C84edDDE78b9dEB001eea9b2b3fD3538A",
         },
     },
     dependencyCompiler: {

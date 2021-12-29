@@ -40,3 +40,8 @@ export function hardhatForkConfig() {
           }
         : {}
 }
+
+export const tenderlyConfig = {
+    optimismKovan: "curie-liquidity-mining-staging",
+    optimism: "curie-liquidity-mining-optimism",
+}
