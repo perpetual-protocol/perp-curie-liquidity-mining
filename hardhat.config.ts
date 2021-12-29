@@ -88,7 +88,7 @@ const config: HardhatUserConfig = {
         },
         perpTokenAddress: {
             // Perp token address on optimism
-            // [ChainId.OPTIMISM_CHAIN_ID]: "",
+            [ChainId.OPTIMISM_CHAIN_ID]: "0x9e1028F5F1D5eDE59748FFceE5532509976840E0",
             // Perp token address on optimismKovan
             [ChainId.OPTIMISM_KOVAN_CHAIN_ID]: "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb",
         },

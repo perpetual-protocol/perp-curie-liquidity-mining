@@ -15,16 +15,19 @@ export enum DeployConfig {
 export enum ContractFullyQualifiedName {
     PerpLiquidityMining = "contracts/PerpLiquidityMining.sol:PerpLiquidityMining",
     GasRefund = "contracts/PerpLiquidityMining.sol:PerpLiquidityMining",
+    TradingCompetition = "contracts/PerpLiquidityMining.sol:PerpLiquidityMining",
 }
 
 export enum DeploymentsKey {
     PerpLiquidityMining = "PerpLiquidityMining",
     GasRefund = "GasRefund",
+    TradingCompetition = "TradingCompetition",
 }
 
 export const CONTRACT_FILES = {
     [DeploymentsKey.PerpLiquidityMining]: ContractFullyQualifiedName.PerpLiquidityMining,
     [DeploymentsKey.GasRefund]: ContractFullyQualifiedName.GasRefund,
+    [DeploymentsKey.TradingCompetition]: ContractFullyQualifiedName.TradingCompetition,
 }
 
 export enum ExternalContractFullyQualifiedName {
