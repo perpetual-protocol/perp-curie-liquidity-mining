@@ -1,18 +1,23 @@
 {
   "contracts": {
     "GasRefund": {
-      "address": "0xF2252F7216c89769ca99d567b63176c1EF270882",
-      "createdBlockNumber": 637591,
+      "address": "0x7851B284A7cb4055Db212B1459B7070174E18F2c",
+      "createdBlockNumber": 654870,
       "name": "contracts/PerpLiquidityMining.sol:PerpLiquidityMining"
     },
     "PerpLiquidityMining": {
-      "address": "0xf60d355281723cEC9baa3D1C971Bb49E9f9aF633",
-      "createdBlockNumber": 425908,
+      "address": "0xa75308889D0f071720346f7c24C3964437168F5E",
+      "createdBlockNumber": 654854,
+      "name": "contracts/PerpLiquidityMining.sol:PerpLiquidityMining"
+    },
+    "TradingCompetition": {
+      "address": "0xc775C2858Cf3086D440ad4D82B64dBDA26e05244",
+      "createdBlockNumber": 654882,
       "name": "contracts/PerpLiquidityMining.sol:PerpLiquidityMining"
     }
   },
   "externalContracts": {
-    "DefaultProxyAdmin": "0x33Ecce155Fa1a63f20794A5b50E6832Bbe29617B"
+    "DefaultProxyAdmin": "0xECE45492979464f5726446C956bdf192DF6D4D37"
   },
   "network": "optimismKovan"
 }
