@@ -7,8 +7,11 @@ and this  projroject aadhheres to [Semantic Versioning](https://semver.org/spec/
 
 ## [unreleased]
 
+#### [0.3.1] - 2021-12-30
+- combine optimism and optimismKovan metadata 
+
 #### [0.3.0] - 2021-12-30
-- Deploy `liquidityMining`, `tradingCompetition`, `gasRefund` to optimismKovan
+- Deploy `liquidityMining`, `tradingCompetition`, `gasRefund` to optimism
 #### [0.2.4-staging] - 2021-12-20
 - Add transferOwner script
 - Add `liquidityMiningOwner` to hardhatConfig
