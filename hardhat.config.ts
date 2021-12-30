@@ -82,6 +82,10 @@ const config: HardhatUserConfig = {
     },
     namedAccounts: {
         deployer: 0, // 0 means ethers.getSigners[0]
+        gnosisSafeAddress: {
+            [ChainId.OPTIMISM_CHAIN_ID]: "0x801B15C92075D85204d1b23054407DA63cc3105B",
+            [ChainId.OPTIMISM_KOVAN_CHAIN_ID]: "0x2a8725c1a9a397e2d1bA26634c8f8d62b403d968",
+        },
         optimismL2BridgeAddress: {
             [ChainId.OPTIMISM_CHAIN_ID]: "0x4200000000000000000000000000000000000010",
             [ChainId.OPTIMISM_KOVAN_CHAIN_ID]: "0x4200000000000000000000000000000000000010",
