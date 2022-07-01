@@ -3,8 +3,7 @@ import { TransactionReceipt } from "@ethersproject/abstract-provider"
 import { parseEther } from "@ethersproject/units"
 import { expect } from "chai"
 import { ethers, waffle } from "hardhat"
-import { TestPerpLiquidityMining } from "../typechain"
-import { ERC20PresetMinterPauser } from "../typechain/openzeppelin"
+import { ERC20PresetMinterPauser, TestPerpLiquidityMining } from "../typechain"
 
 describe("liquidity mining", () => {
     const RANDOM_BYTES32_1 = "0x7c1b1e7c2eaddafdf52250cba9679e5b30014a9d86a0e2af17ec4cee24a5fc80"
