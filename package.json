@@ -39,7 +39,7 @@
     "@openzeppelin/contracts": "3.4.0",
     "@openzeppelin/contracts-upgradeable": "3.4.2",
     "@openzeppelin/hardhat-upgrades": "1.10.0",
-    "@perp/voting-escrow": "git+ssh://git@github.com:perpetual-protocol/voting-escrow.git#bfb2887c4c9a21e036ccc27720235bbad2e2c49f",
+    "@perp/voting-escrow": "git+ssh://git@github.com:perpetual-protocol/voting-escrow.git#6b155ef521e58abcad9b5e10f388280945244662",
     "@tenderly/hardhat-tenderly": "1.0.12",
     "@typechain/ethers-v5": "7.0.0",
     "@typechain/hardhat": "2.0.1",
