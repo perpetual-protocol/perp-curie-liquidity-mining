@@ -7,6 +7,8 @@ and this  projroject aadhheres to [Semantic Versioning](https://semver.org/spec/
 
 ## [unreleased]
 
+#### [0.4.0] - 2022-07-01
+- Add `vePERPRewardDistributor.sol`
 #### [0.3.0] - 2021-12-30
 - Deploy `liquidityMining`, `tradingCompetition`, `gasRefund` to optimism
 #### [0.3.0-staging] - 2021-12-30

@@ -45,6 +45,13 @@ describe("vePERPRewardDistributor", () => {
     })
 
     describe("seedAllocations()", () => {
+        it("force error when seed allocated week", async () => {
+            await testVePERPRewardDistributor.seedAllocations(1, RANDOM_BYTES32_1, parseEther("500"))
+            await expect(
+                testVePERPRewardDistributor.seedAllocations(1, RANDOM_BYTES32_1, parseEther("500")),
+            ).to.be.revertedWith("cannot rewrite merkle root")
+        })
+
         it("seed unallocated week, non-zero amount", async () => {
             await expect(testVePERPRewardDistributor.seedAllocations(1, RANDOM_BYTES32_1, parseEther("500")))
                 .to.emit(testVePERPRewardDistributor, "AllocationSeeded")
@@ -56,17 +63,15 @@ describe("vePERPRewardDistributor", () => {
             expect(await testVePERPRewardDistributor.merkleRootIndexes(0)).to.eq(1)
         })
 
-        it("force error when seed unallocated week, zero amount", async () => {
-            await expect(
-                testVePERPRewardDistributor.seedAllocations(1, RANDOM_BYTES32_1, parseEther("0")),
-            ).to.be.revertedWith("vePRD_TIZ")
-        })
+        it("seed unallocated week, zero amount", async () => {
+            await expect(testVePERPRewardDistributor.seedAllocations(1, RANDOM_BYTES32_1, parseEther("0")))
+                .to.emit(testVePERPRewardDistributor, "AllocationSeeded")
+                .withArgs(1, parseEther("0"))
 
-        it("force error when seed allocated week", async () => {
-            await testVePERPRewardDistributor.seedAllocations(1, RANDOM_BYTES32_1, parseEther("500"))
-            await expect(
-                testVePERPRewardDistributor.seedAllocations(1, RANDOM_BYTES32_1, parseEther("500")),
-            ).to.be.revertedWith("cannot rewrite merkle root")
+            expect(await testPERP.balanceOf(admin.address)).to.eq(parseEther("1000"))
+            expect(await testPERP.balanceOf(testVePERPRewardDistributor.address)).to.eq(parseEther("0"))
+            expect(await testVePERPRewardDistributor.weekMerkleRoots(1)).to.eq(RANDOM_BYTES32_1)
+            expect(await testVePERPRewardDistributor.merkleRootIndexes(0)).to.eq(1)
         })
     })
 

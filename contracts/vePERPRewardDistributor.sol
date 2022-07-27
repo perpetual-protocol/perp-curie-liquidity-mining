@@ -76,7 +76,7 @@ contract vePERPRewardDistributor is MerkleRedeemUpgradeSafe {
         setMinLockDuration(minLockDurationArg);
 
         // approve the vePERP contract to spend the PERP token
-        token.approve(vePERPArg, uint256(-1));
+        token.approve(vePERPArg, type(uint256).max);
     }
 
     function seedAllocations(
@@ -84,8 +84,6 @@ contract vePERPRewardDistributor is MerkleRedeemUpgradeSafe {
         bytes32 merkleRoot,
         uint256 totalAllocation
     ) public override onlyOwner {
-        // vePRD_TIZ: total allocation is zero
-        require(totalAllocation > 0, "vePRD_TIZ");
         super.seedAllocations(week, merkleRoot, totalAllocation);
         merkleRootIndexes.push(week);
         emit AllocationSeeded(week, totalAllocation);
@@ -95,13 +93,16 @@ contract vePERPRewardDistributor is MerkleRedeemUpgradeSafe {
     function setVePERP(address vePERPArg) public onlyOwner {
         // vePRD_vePNC: vePERP is not a contract
         require(vePERPArg.isContract(), "vePRD_vePNC");
-        emit VePERPChanged(_vePERP, vePERPArg);
+
+        address oldVePERP = _vePERP;
         _vePERP = vePERPArg;
+        emit VePERPChanged(oldVePERP, vePERPArg);
     }
 
     function setMinLockDuration(uint256 minLockDurationArg) public onlyOwner {
-        emit MinLockDurationChanged(_minLockDuration, minLockDurationArg);
+        uint256 oldMinLockDuration = _minLockDuration;
         _minLockDuration = minLockDurationArg;
+        emit MinLockDurationChanged(oldMinLockDuration, minLockDurationArg);
     }
 
     //
