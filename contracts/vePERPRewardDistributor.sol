@@ -24,11 +24,20 @@ contract vePERPRewardDistributor is MerkleRedeemUpgradeSafe {
     /// @param totalAllocation Total allocation on the week
     event AllocationSeeded(uint256 indexed week, uint256 totalAllocation);
 
+    /// @dev After supporting delegation, this event is deprecated, use VePERPClaimedV2 instead
     /// @notice Emitted when user claim vePERP reward
     /// @param claimant Claimant address
     /// @param week Week number
     /// @param balance Amount of vePERP reward claimed
     event VePERPClaimed(address indexed claimant, uint256 indexed week, uint256 balance);
+
+    /// @notice Emitted when user claim vePERP reward
+    /// @param claimant Claimant address
+    /// @param week Week number
+    /// @param balance Amount of vePERP reward claimed
+    /// @param recipient The address who actually receives vePERP reward
+    ///        could be another address if the claimant delegates
+    event VePERPClaimedV2(address indexed claimant, uint256 indexed week, uint256 balance, address recipient);
 
     /// @notice Emitted when user set delegate
     /// @param delegator User address
@@ -39,12 +48,6 @@ contract vePERPRewardDistributor is MerkleRedeemUpgradeSafe {
     /// @param delegator User address
     /// @param delegate The address user cleared
     event ClearDelegate(address indexed delegator, address indexed delegate);
-
-    /// @notice Emitted when user claimed reward
-    /// @param delegator User address
-    /// @param delegate The address user delegated
-    /// @param amount The amount of reward
-    event ClaimedWithDelegate(address delegator, address delegate, uint256 amount);
 
     uint256 internal constant _WEEK = 7 * 86400; // a week in seconds
 
@@ -70,11 +73,10 @@ contract vePERPRewardDistributor is MerkleRedeemUpgradeSafe {
     /// @dev If user has delegate, will check delegate's lock qualified or not
     modifier userLockTimeCheck(address user) {
         address delegate = delegation[user];
-
-        user = delegate != address(0) ? delegate : user;
+        address recipient = delegate == address(0) ? user : delegate; // the account who actually receives vePERP
 
         uint256 currentEpochStartTimestamp = (block.timestamp / _WEEK) * _WEEK; // round down to the start of the epoch
-        uint256 userLockEndTimestamp = IvePERP(_vePERP).locked__end(user);
+        uint256 userLockEndTimestamp = IvePERP(_vePERP).locked__end(recipient);
 
         // vePRD_LTM: vePERP lock time is less than minLockDuration
         require(userLockEndTimestamp >= currentEpochStartTimestamp + _minLockDuration, "vePRD_LTM");
@@ -153,7 +155,8 @@ contract vePERPRewardDistributor is MerkleRedeemUpgradeSafe {
 
         claimed[week][liquidityProvider] = true;
         _distribute(liquidityProvider, claimedBalance);
-        emit VePERPClaimed(liquidityProvider, week, claimedBalance);
+        address recipient = _getRecipient(liquidityProvider);
+        emit VePERPClaimedV2(liquidityProvider, week, claimedBalance, recipient);
     }
 
     /// @notice Claim vePERP reward for multiple weeks
@@ -169,6 +172,7 @@ contract vePERPRewardDistributor is MerkleRedeemUpgradeSafe {
         uint256 totalBalance = 0;
         uint256 length = claims.length;
         Claim calldata claim;
+        address recipient = _getRecipient(liquidityProvider);
 
         for (uint256 i = 0; i < length; i++) {
             claim = claims[i];
@@ -181,7 +185,7 @@ contract vePERPRewardDistributor is MerkleRedeemUpgradeSafe {
 
             totalBalance += claim.balance;
             claimed[claim.week][liquidityProvider] = true;
-            emit VePERPClaimed(liquidityProvider, claim.week, claim.balance);
+            emit VePERPClaimedV2(liquidityProvider, claim.week, claim.balance, recipient);
         }
         _distribute(liquidityProvider, totalBalance);
     }
@@ -244,12 +248,19 @@ contract vePERPRewardDistributor is MerkleRedeemUpgradeSafe {
     /// @dev Replace parent function disburse() because vePERP distributor uses deposit_for() instead of transfer()
     ///      to distribute the rewards
     function _distribute(address liquidityProvider, uint256 balance) internal {
-        address delegate = delegation[liquidityProvider];
-        address recipient = delegate == address(0) ? liquidityProvider : delegate;
+        address recipient = _getRecipient(liquidityProvider);
 
         if (balance > 0) {
-            emit ClaimedWithDelegate(liquidityProvider, delegate, balance);
             IvePERP(_vePERP).deposit_for(recipient, balance);
         }
+    }
+
+    //
+    // INTERNAL VIEW
+    //
+
+    function _getRecipient(address liquidityProvider) internal view returns (address) {
+        address delegate = delegation[liquidityProvider];
+        return delegate == address(0) ? liquidityProvider : delegate;
     }
 }
