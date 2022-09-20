@@ -264,4 +264,101 @@ describe("vePERPRewardDistributor", () => {
             )
         })
     })
+
+    // TODO: add sender is contract test if we assert sender must be contract
+    describe("delegate related", () => {
+        describe("setDelegate()", () => {
+            it("force error when user set delegate as zero address", async () => {
+                await expect(
+                    testVePERPRewardDistributor.connect(alice).setDelegate(ethers.constants.AddressZero),
+                ).to.be.revertedWith("vePRD_DTZ")
+            })
+
+            it("force error when user set delegate as self address", async () => {
+                await expect(testVePERPRewardDistributor.connect(alice).setDelegate(alice.address)).to.be.revertedWith(
+                    "vePRD_DTS",
+                )
+            })
+
+            it("force error when user set delegate but already has delegate", async () => {
+                await testVePERPRewardDistributor.connect(alice).setDelegate(carol.address)
+
+                await expect(testVePERPRewardDistributor.connect(alice).setDelegate(carol.address)).to.be.revertedWith(
+                    "vePRD_AD",
+                )
+            })
+
+            it("set delegate", async () => {
+                // first delegate to bob
+                await expect(testVePERPRewardDistributor.connect(alice).setDelegate(bob.address))
+                    .to.be.emit(testVePERPRewardDistributor, "DelegateSet")
+                    .withArgs(alice.address, bob.address)
+
+                const firstDelegate = await testVePERPRewardDistributor.delegation(alice.address)
+                expect(firstDelegate).to.be.eq(bob.address)
+
+                // second delegate to carol, will clear bob delegate and set carol delegate
+                const setDelegateTx = await testVePERPRewardDistributor.connect(alice).setDelegate(carol.address)
+
+                const secondDelegate = await testVePERPRewardDistributor.delegation(alice.address)
+                expect(secondDelegate).to.be.eq(carol.address)
+
+                await expect(setDelegateTx)
+                    .to.be.emit(testVePERPRewardDistributor, "DelegateCleared")
+                    .withArgs(alice.address, bob.address)
+
+                await expect(setDelegateTx)
+                    .to.be.emit(testVePERPRewardDistributor, "DelegateSet")
+                    .withArgs(alice.address, carol.address)
+            })
+        })
+
+        describe("clearDelegate()", () => {
+            it("force error when user clear delegate but has no delegate", async () => {
+                await expect(testVePERPRewardDistributor.connect(alice).clearDelegate()).to.be.revertedWith("vePRD_ND")
+            })
+
+            it("clear delegate when user has delegate", async () => {
+                await testVePERPRewardDistributor.connect(alice).setDelegate(bob.address)
+
+                await expect(testVePERPRewardDistributor.connect(alice).clearDelegate())
+                    .to.be.emit(testVePERPRewardDistributor, "DelegateCleared")
+                    .withArgs(alice.address, bob.address)
+
+                const delegate = await testVePERPRewardDistributor.delegation(alice.address)
+                expect(delegate).to.be.eq(ethers.constants.AddressZero)
+            })
+        })
+
+        describe("claimed reward by delegate", () => {
+            beforeEach(async () => {
+                // seed allocate
+                await testVePERPRewardDistributor.seedAllocations(1, RANDOM_BYTES32_1, parseEther("500"))
+
+                // set delegate
+                await testVePERPRewardDistributor.connect(alice).setDelegate(bob.address)
+            })
+
+            it("force error when delegate lock time less than minLockDuration or has no lock", async () => {
+                await expect(
+                    testVePERPRewardDistributor
+                        .connect(bob)
+                        .claimWeek(alice.address, 1, parseEther("100"), [RANDOM_BYTES32_1]),
+                ).to.be.revertedWith("vePRD_LTM")
+            })
+
+            it("claimed reward if delegate lock time greater than equal minLockDuration", async () => {
+                const timestamp = await getLatestTimestamp()
+                await vePERP.connect(bob).create_lock(parseEther("100"), timestamp + 3 * MONTH)
+
+                await expect(
+                    testVePERPRewardDistributor
+                        .connect(bob)
+                        .claimWeek(alice.address, 1, parseEther("100"), [RANDOM_BYTES32_1]),
+                )
+                    .to.be.emit(testVePERPRewardDistributor, "VePERPClaimedV2")
+                    .withArgs(alice.address, 1, parseEther("100"), bob.address)
+            })
+        })
+    })
 })

@@ -42,12 +42,12 @@ contract vePERPRewardDistributor is MerkleRedeemUpgradeSafe {
     /// @notice Emitted when user set delegate
     /// @param delegator User address
     /// @param delegate The address user delegated
-    event SetDelegate(address indexed delegator, address indexed delegate);
+    event DelegateSet(address indexed delegator, address indexed delegate);
 
     /// @notice Emitted when user clear delegate
     /// @param delegator User address
     /// @param delegate The address user cleared
-    event ClearDelegate(address indexed delegator, address indexed delegate);
+    event DelegateCleared(address indexed delegator, address indexed delegate);
 
     uint256 internal constant _WEEK = 7 * 86400; // a week in seconds
 
@@ -193,30 +193,38 @@ contract vePERPRewardDistributor is MerkleRedeemUpgradeSafe {
     /// @notice Sets a delegate for the msg.sender
     /// @param delegate Address of the delegate
     function setDelegate(address delegate) external {
+        // TODO: who can call `setDelegate()` ? EOA or Contract or both?
+        // vePRD_SNC: sender is not a contract
+        // require(address(msg.sender).isContract(), "vePRD_SNC");
+
+        // vePRD_DTS: delegate to self
         require(delegate != msg.sender, "vePRD_DTS");
+        // vePRD_DTZ: delegate to zero address
         require(delegate != address(0), "vePRD_DTZ");
         address currentDelegate = delegation[msg.sender];
+        // vePRD_AD: already delegated
         require(delegate != currentDelegate, "vePRD_AD");
 
         // Update delegation mapping
         delegation[msg.sender] = delegate;
 
         if (currentDelegate != address(0)) {
-            emit ClearDelegate(msg.sender, currentDelegate);
+            emit DelegateCleared(msg.sender, currentDelegate);
         }
 
-        emit SetDelegate(msg.sender, delegate);
+        emit DelegateSet(msg.sender, delegate);
     }
 
     /// @notice Clears a delegate for the msg.sender
     function clearDelegate() external {
         address currentDelegate = delegation[msg.sender];
+        // vePRD_ND: no delegate
         require(currentDelegate != address(0), "vePRD_ND");
 
         // update delegation mapping
         delegation[msg.sender] = address(0);
 
-        emit ClearDelegate(msg.sender, currentDelegate);
+        emit DelegateCleared(msg.sender, currentDelegate);
     }
 
     //
