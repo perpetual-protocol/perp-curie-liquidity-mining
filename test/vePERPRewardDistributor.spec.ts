@@ -143,8 +143,8 @@ describe("vePERPRewardDistributor", () => {
                         .connect(alice)
                         .claimWeek(alice.address, 1, parseEther("200"), [RANDOM_BYTES32_1]),
                 )
-                    .to.emit(testVePERPRewardDistributor, "VePERPClaimed")
-                    .withArgs(alice.address, 1, parseEther("200"))
+                    .to.emit(testVePERPRewardDistributor, "VePERPClaimedV2")
+                    .withArgs(alice.address, 1, parseEther("200"), alice.address)
 
                 expect((await vePERP.locked(alice.address)).amount).to.be.eq(aliceLockedBefore.add(parseEther("200")))
             })
@@ -157,8 +157,8 @@ describe("vePERPRewardDistributor", () => {
                         .connect(bob)
                         .claimWeek(alice.address, 1, parseEther("200"), [RANDOM_BYTES32_1]),
                 )
-                    .to.emit(testVePERPRewardDistributor, "VePERPClaimed")
-                    .withArgs(alice.address, 1, parseEther("200"))
+                    .to.emit(testVePERPRewardDistributor, "VePERPClaimedV2")
+                    .withArgs(alice.address, 1, parseEther("200"), alice.address)
 
                 expect((await vePERP.locked(alice.address)).amount).to.be.eq(aliceLockedBefore.add(parseEther("200")))
             })
@@ -196,11 +196,11 @@ describe("vePERPRewardDistributor", () => {
             ])
 
             await expect(tx)
-                .to.emit(testVePERPRewardDistributor, "VePERPClaimed")
-                .withArgs(alice.address, 1, parseEther("200"))
+                .to.emit(testVePERPRewardDistributor, "VePERPClaimedV2")
+                .withArgs(alice.address, 1, parseEther("200"), alice.address)
             await expect(tx)
-                .to.emit(testVePERPRewardDistributor, "VePERPClaimed")
-                .withArgs(alice.address, 2, parseEther("100"))
+                .to.emit(testVePERPRewardDistributor, "VePERPClaimedV2")
+                .withArgs(alice.address, 2, parseEther("100"), alice.address)
 
             expect((await vePERP.locked(alice.address)).amount).to.be.eq(aliceLockedBefore.add(parseEther("300")))
         })
