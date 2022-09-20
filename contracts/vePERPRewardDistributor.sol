@@ -251,7 +251,6 @@ contract vePERPRewardDistributor is MerkleRedeemUpgradeSafe {
         address recipient = _getRecipient(liquidityProvider);
 
         if (balance > 0) {
-            emit Claimed(liquidityProvider, balance);
             IvePERP(_vePERP).deposit_for(recipient, balance);
         }
     }
