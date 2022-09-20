@@ -30,6 +30,22 @@ contract vePERPRewardDistributor is MerkleRedeemUpgradeSafe {
     /// @param balance Amount of vePERP reward claimed
     event VePERPClaimed(address indexed claimant, uint256 indexed week, uint256 balance);
 
+    /// @notice Emitted when user set delegate
+    /// @param delegator User address
+    /// @param delegate The address user delegated
+    event SetDelegate(address indexed delegator, address indexed delegate);
+
+    /// @notice Emitted when user clear delegate
+    /// @param delegator User address
+    /// @param delegate The address user cleared
+    event ClearDelegate(address indexed delegator, address indexed delegate);
+
+    /// @notice Emitted when user claimed reward
+    /// @param delegator User address
+    /// @param delegate The address user delegated
+    /// @param amount The amount of reward
+    event ClaimedWithDelegate(address delegator, address delegate, uint256 amount);
+
     uint256 internal constant _WEEK = 7 * 86400; // a week in seconds
 
     //**********************************************************//
@@ -44,12 +60,19 @@ contract vePERPRewardDistributor is MerkleRedeemUpgradeSafe {
     //    The above state variables can not change the order    //
     //**********************************************************//
 
+    mapping(address => address) public delegation;
+
     //
     // MODIFIER
     //
 
     /// @notice Modifier to check if the caller's vePERP lock time is over minLockDuration
+    /// @dev If user has delegate, will check delegate's lock qualified or not
     modifier userLockTimeCheck(address user) {
+        address delegate = delegation[user];
+
+        user = delegate != address(0) ? delegate : user;
+
         uint256 currentEpochStartTimestamp = (block.timestamp / _WEEK) * _WEEK; // round down to the start of the epoch
         uint256 userLockEndTimestamp = IvePERP(_vePERP).locked__end(user);
 
@@ -163,6 +186,35 @@ contract vePERPRewardDistributor is MerkleRedeemUpgradeSafe {
         _distribute(liquidityProvider, totalBalance);
     }
 
+    /// @notice Sets a delegate for the msg.sender
+    /// @param delegate Address of the delegate
+    function setDelegate(address delegate) external {
+        require(delegate != msg.sender, "vePRD_DTS");
+        require(delegate != address(0), "vePRD_DTZ");
+        address currentDelegate = delegation[msg.sender];
+        require(delegate != currentDelegate, "vePRD_AD");
+
+        // Update delegation mapping
+        delegation[msg.sender] = delegate;
+
+        if (currentDelegate != address(0)) {
+            emit ClearDelegate(msg.sender, currentDelegate);
+        }
+
+        emit SetDelegate(msg.sender, delegate);
+    }
+
+    /// @notice Clears a delegate for the msg.sender
+    function clearDelegate() external {
+        address currentDelegate = delegation[msg.sender];
+        require(currentDelegate != address(0), "vePRD_ND");
+
+        // update delegation mapping
+        delegation[msg.sender] = address(0);
+
+        emit ClearDelegate(msg.sender, currentDelegate);
+    }
+
     //
     // EXTERNAL VIEW
     //
@@ -192,9 +244,12 @@ contract vePERPRewardDistributor is MerkleRedeemUpgradeSafe {
     /// @dev Replace parent function disburse() because vePERP distributor uses deposit_for() instead of transfer()
     ///      to distribute the rewards
     function _distribute(address liquidityProvider, uint256 balance) internal {
+        address delegate = delegation[liquidityProvider];
+        address recipient = delegate == address(0) ? liquidityProvider : delegate;
+
         if (balance > 0) {
-            emit Claimed(liquidityProvider, balance);
-            IvePERP(_vePERP).deposit_for(liquidityProvider, balance);
+            emit ClaimedWithDelegate(liquidityProvider, delegate, balance);
+            IvePERP(_vePERP).deposit_for(recipient, balance);
         }
     }
 }
