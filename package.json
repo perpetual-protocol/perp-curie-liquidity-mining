@@ -1,6 +1,6 @@
 {
   "name": "@perp/curie-liquidity-mining",
-  "version": "0.4.0",
+  "version": "0.5.0-dev",
   "description": "Perpetual Protocol Curie (V2) liquidity mining contracts",
   "main": "hardhat.config.js",
   "files": [
@@ -32,6 +32,7 @@
   },
   "license": "GPL-2.0-or-later",
   "devDependencies": {
+    "@defi-wonderland/smock": "2.0.7",
     "@eth-optimism/contracts": "0.5.7",
     "@nomiclabs/ethereumjs-vm": "4.2.2",
     "@nomiclabs/hardhat-ethers": "2.0.2",
@@ -39,7 +40,7 @@
     "@openzeppelin/contracts": "3.4.0",
     "@openzeppelin/contracts-upgradeable": "3.4.2",
     "@openzeppelin/hardhat-upgrades": "1.10.0",
-    "@perp/voting-escrow": "git+ssh://git@github.com:perpetual-protocol/voting-escrow.git#6b155ef521e58abcad9b5e10f388280945244662",
+    "@perp/voting-escrow": "1.2.0-dev2",
     "@tenderly/hardhat-tenderly": "1.0.12",
     "@typechain/ethers-v5": "7.0.0",
     "@typechain/hardhat": "2.0.1",
