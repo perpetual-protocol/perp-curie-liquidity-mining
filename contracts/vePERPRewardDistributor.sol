@@ -240,7 +240,7 @@ contract vePERPRewardDistributor is MerkleRedeemUpgradeSafe {
     /// @dev Get the beneficiary address from `RewardDelegate` contract
     ///      if user didn't have delegate, will return the user address itself
     function _getBeneficiary(address user) internal view returns (address beneficiary) {
-        (beneficiary, ) = IRewardDelegate(_rewardDelegate).getBeneficiaryAndTrusterCount(user);
+        (beneficiary, ) = IRewardDelegate(_rewardDelegate).getBeneficiaryAndQualifiedMultiplier(user);
 
         return beneficiary;
     }

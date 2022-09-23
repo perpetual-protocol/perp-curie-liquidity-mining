@@ -32,7 +32,7 @@ describe("vePERPRewardDistributor", () => {
         vePERP = (await vePERPFactory.deploy(testPERP.address, "vePERP", "vePERP", "v1")) as VePERP
 
         mockedRewardDelegate = await smock.fake<RewardDelegate>("RewardDelegate")
-        mockedRewardDelegate.getBeneficiaryAndTrusterCount.returns((trusterObject: any) => {
+        mockedRewardDelegate.getBeneficiaryAndQualifiedMultiplier.returns((trusterObject: any) => {
             return [trusterObject.truster, 1]
         }) // NOTE: no delegation by default
 
@@ -303,7 +303,7 @@ describe("vePERPRewardDistributor", () => {
                 await vePERP.connect(bob).create_lock(parseEther("100"), timestamp + YEAR)
 
                 const bobLockedBefore = (await vePERP.locked(bob.address)).amount
-                mockedRewardDelegate.getBeneficiaryAndTrusterCount.returns([bob.address, 1])
+                mockedRewardDelegate.getBeneficiaryAndQualifiedMultiplier.returns([bob.address, 2])
 
                 const tx = await testVePERPRewardDistributor
                     .connect(alice)
@@ -322,7 +322,7 @@ describe("vePERPRewardDistributor", () => {
                 const timestamp = await getLatestTimestamp()
                 await vePERP.connect(bob).create_lock(parseEther("100"), timestamp + 2 * WEEK)
 
-                mockedRewardDelegate.getBeneficiaryAndTrusterCount.returns([bob.address, 1])
+                mockedRewardDelegate.getBeneficiaryAndQualifiedMultiplier.returns([bob.address, 2])
 
                 await expect(
                     testVePERPRewardDistributor
@@ -332,7 +332,7 @@ describe("vePERPRewardDistributor", () => {
             })
 
             it("with delegation: force error when beneficiary does not have a lock", async () => {
-                mockedRewardDelegate.getBeneficiaryAndTrusterCount.returns([bob.address, 1])
+                mockedRewardDelegate.getBeneficiaryAndQualifiedMultiplier.returns([bob.address, 2])
 
                 await expect(
                     testVePERPRewardDistributor
@@ -355,7 +355,7 @@ describe("vePERPRewardDistributor", () => {
             it("claim when all weeks are allocated and meet lock time requirements", async () => {
                 const bobLockedBefore = (await vePERP.locked(bob.address)).amount
 
-                mockedRewardDelegate.getBeneficiaryAndTrusterCount.returns([bob.address, 1])
+                mockedRewardDelegate.getBeneficiaryAndQualifiedMultiplier.returns([bob.address, 2])
 
                 const tx = await testVePERPRewardDistributor.claimWeeks(alice.address, [
                     { week: 1, balance: parseEther("200"), merkleProof: [RANDOM_BYTES32_1] },
@@ -373,7 +373,7 @@ describe("vePERPRewardDistributor", () => {
             })
 
             it("force error when at least one of the weeks fail to meet the requirements", async () => {
-                mockedRewardDelegate.getBeneficiaryAndTrusterCount.returns([bob.address, 1])
+                mockedRewardDelegate.getBeneficiaryAndQualifiedMultiplier.returns([bob.address, 2])
 
                 await testVePERPRewardDistributor.claimWeek(alice.address, 1, parseEther("200"), [RANDOM_BYTES32_1])
 
