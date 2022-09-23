@@ -277,16 +277,16 @@ describe("vePERPRewardDistributor", () => {
         })
 
         it("set RewardDelegate by admin", async () => {
-            await expect(testVePERPRewardDistributor.setRewardDelegate(testPERP.address))
+            await expect(testVePERPRewardDistributor.setRewardDelegate(mockedRewardDelegate.address))
                 .to.emit(testVePERPRewardDistributor, "RewardDelegateChanged")
-                .withArgs(mockedRewardDelegate.address, testPERP.address)
+                .withArgs(mockedRewardDelegate.address, mockedRewardDelegate.address)
 
-            expect(await testVePERPRewardDistributor.getRewardDelegate()).to.be.eq(testPERP.address)
+            expect(await testVePERPRewardDistributor.getRewardDelegate()).to.be.eq(mockedRewardDelegate.address)
         })
 
         it("force error when set RewardDelegate by other", async () => {
             await expect(
-                testVePERPRewardDistributor.connect(alice).setRewardDelegate(testPERP.address),
+                testVePERPRewardDistributor.connect(alice).setRewardDelegate(mockedRewardDelegate.address),
             ).to.be.revertedWith("PerpFiOwnableUpgrade: caller is not the owner")
         })
     })
@@ -297,7 +297,7 @@ describe("vePERPRewardDistributor", () => {
                 await testVePERPRewardDistributor.seedAllocations(1, RANDOM_BYTES32_1, parseEther("500"))
             })
 
-            it("with delegation: claim when beneficiary lock expiry is greater than the minimum lock duration", async () => {
+            it("claim when beneficiary lock expiry is greater than the minimum lock duration", async () => {
                 // bob lock 3 MONTH
                 const timestamp = await getLatestTimestamp()
                 await vePERP.connect(bob).create_lock(parseEther("100"), timestamp + YEAR)
@@ -317,7 +317,7 @@ describe("vePERPRewardDistributor", () => {
                 expect((await vePERP.locked(alice.address)).amount).to.be.eq("0")
             })
 
-            it("with delegation: force error when user lock expiry is less than the minimum lock duration", async () => {
+            it("force error when user lock expiry is less than the minimum lock duration", async () => {
                 // bob lock 2 WEEK
                 const timestamp = await getLatestTimestamp()
                 await vePERP.connect(bob).create_lock(parseEther("100"), timestamp + 2 * WEEK)
@@ -331,7 +331,7 @@ describe("vePERPRewardDistributor", () => {
                 ).revertedWith("vePRD_LTM")
             })
 
-            it("with delegation: force error when beneficiary does not have a lock", async () => {
+            it("force error when beneficiary does not have a lock", async () => {
                 mockedRewardDelegate.getBeneficiaryAndQualifiedMultiplier.returns([bob.address, 2])
 
                 await expect(
@@ -369,6 +369,7 @@ describe("vePERPRewardDistributor", () => {
                     .to.emit(testVePERPRewardDistributor, "VePERPClaimedV2")
                     .withArgs(alice.address, 2, parseEther("100"), bob.address)
 
+                expect((await vePERP.locked(alice.address)).amount).to.be.eq("0")
                 expect((await vePERP.locked(bob.address)).amount).to.be.eq(bobLockedBefore.add(parseEther("300")))
             })
 

@@ -161,7 +161,6 @@ contract vePERPRewardDistributor is MerkleRedeemUpgradeSafe {
         claimed[week][liquidityProvider] = true;
 
         address beneficiary = _getBeneficiary(liquidityProvider);
-
         _distribute(beneficiary, claimedBalance);
         emit VePERPClaimedV2(liquidityProvider, week, claimedBalance, beneficiary);
     }
@@ -241,7 +240,6 @@ contract vePERPRewardDistributor is MerkleRedeemUpgradeSafe {
     ///      if user didn't have delegate, will return the user address itself
     function _getBeneficiary(address user) internal view returns (address beneficiary) {
         (beneficiary, ) = IRewardDelegate(_rewardDelegate).getBeneficiaryAndQualifiedMultiplier(user);
-
         return beneficiary;
     }
 }
