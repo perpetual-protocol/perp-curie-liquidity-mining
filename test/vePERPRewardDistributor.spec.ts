@@ -1,9 +1,10 @@
+import { FakeContract, smock } from "@defi-wonderland/smock"
 import chai, { expect } from "chai"
 import { solidity } from "ethereum-waffle"
 import { parseEther } from "ethers/lib/utils"
 import { ethers, waffle } from "hardhat"
 import { TestERC20, TestVePERPRewardDistributor } from "../typechain"
-import { VePERP } from "../typechain/voting-escrow"
+import { RewardDelegate, VePERP } from "../typechain/voting-escrow"
 import { getLatestTimestamp } from "./shared/utilities"
 
 chai.use(solidity)
@@ -20,6 +21,7 @@ describe("vePERPRewardDistributor", () => {
     let vePERP: VePERP
     let testVePERPRewardDistributor: TestVePERPRewardDistributor
     let testPERP: TestERC20
+    let mockedRewardDelegate: FakeContract<RewardDelegate>
 
     beforeEach(async () => {
         const testPERPFactory = await ethers.getContractFactory("TestERC20")
@@ -29,9 +31,19 @@ describe("vePERPRewardDistributor", () => {
         const vePERPFactory = await ethers.getContractFactory("vePERP")
         vePERP = (await vePERPFactory.deploy(testPERP.address, "vePERP", "vePERP", "v1")) as VePERP
 
+        mockedRewardDelegate = await smock.fake<RewardDelegate>("RewardDelegate")
+        mockedRewardDelegate.getBeneficiaryAndQualifiedMultiplier.returns((trusterObject: any) => {
+            return [trusterObject.truster, 1]
+        }) // NOTE: no delegation by default
+
         const vePERPRewardDistributorFactory = await ethers.getContractFactory("testVePERPRewardDistributor")
         testVePERPRewardDistributor = (await vePERPRewardDistributorFactory.deploy()) as TestVePERPRewardDistributor
-        await testVePERPRewardDistributor.initialize(testPERP.address, vePERP.address, 3 * MONTH)
+        await testVePERPRewardDistributor.initialize(
+            testPERP.address,
+            vePERP.address,
+            mockedRewardDelegate.address,
+            3 * MONTH,
+        )
 
         await testPERP.mint(admin.address, parseEther("1000"))
         await testPERP.mint(alice.address, parseEther("1000"))
@@ -143,8 +155,8 @@ describe("vePERPRewardDistributor", () => {
                         .connect(alice)
                         .claimWeek(alice.address, 1, parseEther("200"), [RANDOM_BYTES32_1]),
                 )
-                    .to.emit(testVePERPRewardDistributor, "VePERPClaimed")
-                    .withArgs(alice.address, 1, parseEther("200"))
+                    .to.emit(testVePERPRewardDistributor, "VePERPClaimedV2")
+                    .withArgs(alice.address, 1, parseEther("200"), alice.address)
 
                 expect((await vePERP.locked(alice.address)).amount).to.be.eq(aliceLockedBefore.add(parseEther("200")))
             })
@@ -157,8 +169,8 @@ describe("vePERPRewardDistributor", () => {
                         .connect(bob)
                         .claimWeek(alice.address, 1, parseEther("200"), [RANDOM_BYTES32_1]),
                 )
-                    .to.emit(testVePERPRewardDistributor, "VePERPClaimed")
-                    .withArgs(alice.address, 1, parseEther("200"))
+                    .to.emit(testVePERPRewardDistributor, "VePERPClaimedV2")
+                    .withArgs(alice.address, 1, parseEther("200"), alice.address)
 
                 expect((await vePERP.locked(alice.address)).amount).to.be.eq(aliceLockedBefore.add(parseEther("200")))
             })
@@ -196,11 +208,11 @@ describe("vePERPRewardDistributor", () => {
             ])
 
             await expect(tx)
-                .to.emit(testVePERPRewardDistributor, "VePERPClaimed")
-                .withArgs(alice.address, 1, parseEther("200"))
+                .to.emit(testVePERPRewardDistributor, "VePERPClaimedV2")
+                .withArgs(alice.address, 1, parseEther("200"), alice.address)
             await expect(tx)
-                .to.emit(testVePERPRewardDistributor, "VePERPClaimed")
-                .withArgs(alice.address, 2, parseEther("100"))
+                .to.emit(testVePERPRewardDistributor, "VePERPClaimedV2")
+                .withArgs(alice.address, 2, parseEther("100"), alice.address)
 
             expect((await vePERP.locked(alice.address)).amount).to.be.eq(aliceLockedBefore.add(parseEther("300")))
         })
@@ -262,6 +274,117 @@ describe("vePERPRewardDistributor", () => {
             await expect(testVePERPRewardDistributor.connect(alice).setMinLockDuration(WEEK)).to.be.revertedWith(
                 "PerpFiOwnableUpgrade: caller is not the owner",
             )
+        })
+
+        it("set RewardDelegate by admin", async () => {
+            await expect(testVePERPRewardDistributor.setRewardDelegate(mockedRewardDelegate.address))
+                .to.emit(testVePERPRewardDistributor, "RewardDelegateChanged")
+                .withArgs(mockedRewardDelegate.address, mockedRewardDelegate.address)
+
+            expect(await testVePERPRewardDistributor.getRewardDelegate()).to.be.eq(mockedRewardDelegate.address)
+        })
+
+        it("force error when set RewardDelegate by other", async () => {
+            await expect(
+                testVePERPRewardDistributor.connect(alice).setRewardDelegate(mockedRewardDelegate.address),
+            ).to.be.revertedWith("PerpFiOwnableUpgrade: caller is not the owner")
+        })
+    })
+
+    describe("with delegation", () => {
+        describe("claimWeek()", () => {
+            beforeEach(async () => {
+                await testVePERPRewardDistributor.seedAllocations(1, RANDOM_BYTES32_1, parseEther("500"))
+            })
+
+            it("claim when beneficiary lock expiry is greater than the minimum lock duration", async () => {
+                // bob lock 3 MONTH
+                const timestamp = await getLatestTimestamp()
+                await vePERP.connect(bob).create_lock(parseEther("100"), timestamp + YEAR)
+
+                const bobLockedBefore = (await vePERP.locked(bob.address)).amount
+                mockedRewardDelegate.getBeneficiaryAndQualifiedMultiplier.returns([bob.address, 2])
+
+                const tx = await testVePERPRewardDistributor
+                    .connect(alice)
+                    .claimWeek(alice.address, 1, parseEther("200"), [RANDOM_BYTES32_1])
+
+                await expect(tx)
+                    .to.emit(testVePERPRewardDistributor, "VePERPClaimedV2")
+                    .withArgs(alice.address, 1, parseEther("200"), bob.address)
+
+                expect((await vePERP.locked(bob.address)).amount).to.be.eq(bobLockedBefore.add(parseEther("200")))
+                expect((await vePERP.locked(alice.address)).amount).to.be.eq("0")
+            })
+
+            it("force error when user lock expiry is less than the minimum lock duration", async () => {
+                // bob lock 2 WEEK
+                const timestamp = await getLatestTimestamp()
+                await vePERP.connect(bob).create_lock(parseEther("100"), timestamp + 2 * WEEK)
+
+                mockedRewardDelegate.getBeneficiaryAndQualifiedMultiplier.returns([bob.address, 2])
+
+                await expect(
+                    testVePERPRewardDistributor
+                        .connect(alice)
+                        .claimWeek(alice.address, 1, parseEther("200"), [RANDOM_BYTES32_1]),
+                ).revertedWith("vePRD_LTM")
+            })
+
+            it("force error when beneficiary does not have a lock", async () => {
+                mockedRewardDelegate.getBeneficiaryAndQualifiedMultiplier.returns([bob.address, 2])
+
+                await expect(
+                    testVePERPRewardDistributor
+                        .connect(alice)
+                        .claimWeek(alice.address, 1, parseEther("200"), [RANDOM_BYTES32_1]),
+                ).revertedWith("vePRD_LTM")
+            })
+        })
+
+        describe("claimWeeks()", () => {
+            beforeEach(async () => {
+                await testVePERPRewardDistributor.seedAllocations(1, RANDOM_BYTES32_1, parseEther("500"))
+                await testVePERPRewardDistributor.seedAllocations(2, RANDOM_BYTES32_2, parseEther("500"))
+
+                // bob lock 3 MONTH
+                const timestamp = await getLatestTimestamp()
+                await vePERP.connect(bob).create_lock(parseEther("100"), timestamp + 3 * MONTH)
+            })
+
+            it("claim when all weeks are allocated and meet lock time requirements", async () => {
+                const bobLockedBefore = (await vePERP.locked(bob.address)).amount
+
+                mockedRewardDelegate.getBeneficiaryAndQualifiedMultiplier.returns([bob.address, 2])
+
+                const tx = await testVePERPRewardDistributor.claimWeeks(alice.address, [
+                    { week: 1, balance: parseEther("200"), merkleProof: [RANDOM_BYTES32_1] },
+                    { week: 2, balance: parseEther("100"), merkleProof: [RANDOM_BYTES32_2] },
+                ])
+
+                await expect(tx)
+                    .to.emit(testVePERPRewardDistributor, "VePERPClaimedV2")
+                    .withArgs(alice.address, 1, parseEther("200"), bob.address)
+                await expect(tx)
+                    .to.emit(testVePERPRewardDistributor, "VePERPClaimedV2")
+                    .withArgs(alice.address, 2, parseEther("100"), bob.address)
+
+                expect((await vePERP.locked(alice.address)).amount).to.be.eq("0")
+                expect((await vePERP.locked(bob.address)).amount).to.be.eq(bobLockedBefore.add(parseEther("300")))
+            })
+
+            it("force error when at least one of the weeks fail to meet the requirements", async () => {
+                mockedRewardDelegate.getBeneficiaryAndQualifiedMultiplier.returns([bob.address, 2])
+
+                await testVePERPRewardDistributor.claimWeek(alice.address, 1, parseEther("200"), [RANDOM_BYTES32_1])
+
+                await expect(
+                    testVePERPRewardDistributor.claimWeeks(alice.address, [
+                        { week: 1, balance: parseEther("200"), merkleProof: [RANDOM_BYTES32_1] },
+                        { week: 2, balance: parseEther("100"), merkleProof: [RANDOM_BYTES32_2] },
+                    ]),
+                ).to.be.revertedWith("vePRD_CA")
+            })
         })
     })
 })
