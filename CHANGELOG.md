@@ -7,6 +7,9 @@ and this  projroject aadhheres to [Semantic Versioning](https://semver.org/spec/
 
 ## [unreleased]
 
+#### [0.5.0] - 2022-10-07
+- Add `getRewardDelegate()` to `vePERPRewardDistributor.sol`
+- Add new event `VePERPClaimedV2`, `RewardDelegateChanged` and deprecate old event `VePERPClaimed`
 #### [0.4.0] - 2022-07-01
 - Add `vePERPRewardDistributor.sol`
 #### [0.3.0] - 2021-12-30

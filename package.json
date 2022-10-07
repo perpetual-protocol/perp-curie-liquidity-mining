@@ -1,6 +1,6 @@
 {
   "name": "@perp/curie-liquidity-mining",
-  "version": "0.5.0-dev3",
+  "version": "0.5.0",
   "description": "Perpetual Protocol Curie (V2) liquidity mining contracts",
   "main": "hardhat.config.js",
   "files": [
